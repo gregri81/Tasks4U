@@ -5,8 +5,63 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tasks4U"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Background="AliceBlue"       
+        Title="Tasks4U" Height="450" Width="800">
+    <TabControl>
+        <TabItem Header="Tasks">
+            <DockPanel>
+                <ToolBar DockPanel.Dock="Top">
+                    <Button>
+                        <StackPanel Orientation="Vertical">
+                            <Image Source="/Images/plus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
+                            <TextBlock>Add</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button>
+                        <StackPanel Orientation="Vertical">
+                            <Image Source="/Images/minus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
+                            <TextBlock>Remove</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+                
+                <DataGrid DataContext="{Binding Tasks}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name"/>
+                        <DataGridTextColumn Header="Description"/>
+                        <DataGridComboBoxColumn Header="Desk" />
+                        <DataGridComboBoxColumn Header="Date" />
+                        <DataGridComboBoxColumn Header="Frequency" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
 
-    </Grid>
+        <TabItem Header="Desks">
+            <DockPanel>
+                <ToolBar DockPanel.Dock="Top">
+                    <Button>
+                        <StackPanel Orientation="Vertical">
+                            <Image Source="/Images/plus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
+                            <TextBlock>Add</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button>
+                        <StackPanel Orientation="Vertical">
+                            <Image Source="/Images/minus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
+                            <TextBlock>Remove</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+                
+                <DataGrid>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name"/>
+                        <DataGridTextColumn Header="Description"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
+    </TabControl>
+
 </Window>
