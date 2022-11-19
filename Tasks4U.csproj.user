@@ -7,7 +7,30 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\NewTask.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\TaskDate.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\TasksList.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Resources\ComboBoxStyle.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NewTask.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\TaskDate.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\TasksList.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="Tasks4U.Views.TaskDate"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Tasks4U.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <!-- When frequency is Once -->
+        <DatePicker
+                    Visibility="{Binding IsOnceFrequency,Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+        <!-- When frequency is Every Week -->
+        <ComboBox 
+                    Visibility="{Binding IsEveryWeekFrequency,Converter={StaticResource BoolToVisibilityConverter}}"
+                    ItemsSource="{Binding WeekDays}" SelectedValue="{Binding WeekDay}"/>
+
+        <!-- When frequency is Every Month -->
+        <ComboBox 
+                    Visibility="{Binding IsEveryMonthFrequency,Converter={StaticResource BoolToVisibilityConverter}}"
+                    ItemsSource="{Binding Days1To28}" SelectedValue="{Binding Day}"/>
+
+        <!-- When frequency is Every Year -->
+        <DockPanel 
+                        Visibility="{Binding IsEveryYearFrequency,Converter={StaticResource BoolToVisibilityConverter}}">
+            <!-- Day -->
+            <ComboBox DockPanel.Dock="Right" Width="45"
+                        ItemsSource="{Binding DaysInMonth}" SelectedValue="{Binding DayInMonth}"/>
+
+            <!-- Month -->
+            <ComboBox ItemsSource="{Binding Months}" SelectedValue="{Binding Month}"/>
+
+        </DockPanel>
+
+    </Grid>
+</UserControl>

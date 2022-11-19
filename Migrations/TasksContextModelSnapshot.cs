@@ -27,6 +27,12 @@ namespace Tasks4U.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateOnly>("FinalDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("IntermmediateDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -34,46 +40,12 @@ namespace Tasks4U.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("TaskFrequency")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("ID");
 
                     b.ToTable("Tasks");
-                });
-
-            modelBuilder.Entity("Tasks4U.Models.TaskDate", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Frequency")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsFinal")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TaskID")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("TaskID");
-
-                    b.ToTable("TaskDate");
-                });
-
-            modelBuilder.Entity("Tasks4U.Models.TaskDate", b =>
-                {
-                    b.HasOne("Tasks4U.Models.Task", null)
-                        .WithMany("TaskDates")
-                        .HasForeignKey("TaskID");
-                });
-
-            modelBuilder.Entity("Tasks4U.Models.Task", b =>
-                {
-                    b.Navigation("TaskDates");
                 });
 #pragma warning restore 612, 618
         }

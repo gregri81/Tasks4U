@@ -3,57 +3,74 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Tasks4U"
+        xmlns:local="clr-namespace:Tasks4U" xmlns:views="clr-namespace:Tasks4U.Views"
         mc:Ignorable="d"
         Background="AliceBlue"       
-        Title="Tasks4U" Height="450" Width="800">
+        Title="Tasks4U" Height="450" Width="1000">
     <TabControl>
-        <TabItem Header="Tasks">
+        <!-- Tasks tab-->
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock Text="Tasks" Style="{StaticResource TabItemTextBlockStyle}"/>
+            </TabItem.Header>
             <DockPanel>
                 <ToolBar DockPanel.Dock="Top">
-                    <Button>
-                        <StackPanel Orientation="Vertical">
+                    <!-- Add button - show the NewTask UserControl-->
+                    <Button Command="{Binding ShowNewTaskCommand}" 
+                            Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
                             <Image Source="/Images/plus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
                             <TextBlock>Add</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button>
-                        <StackPanel Orientation="Vertical">
+                    
+                    <!-- Remove button - for removing an existing task-->
+                    <Button 
+                            Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
                             <Image Source="/Images/minus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
                             <TextBlock>Remove</TextBlock>
                         </StackPanel>
                     </Button>
+
+                    <!-- Done button - the user should click on it when she's done with the new task parameters-->
+                    <Button 
+                            Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
+                            <Image Source="/Images/check.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
+                            <TextBlock>Done</TextBlock>
+                        </StackPanel>
+                    </Button>
                 </ToolBar>
-                
-                <DataGrid DataContext="{Binding Tasks}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name"/>
-                        <DataGridTextColumn Header="Description"/>
-                        <DataGridComboBoxColumn Header="Desk" />
-                        <DataGridComboBoxColumn Header="Date" />
-                        <DataGridComboBoxColumn Header="Frequency" />
-                    </DataGrid.Columns>
-                </DataGrid>
+
+                <Grid>
+                    <views:TasksList Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <views:NewTask                         
+                        Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Grid>
             </DockPanel>
         </TabItem>
 
-        <TabItem Header="Desks">
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock Text="Desks" Style="{StaticResource TabItemTextBlockStyle}"/>
+            </TabItem.Header>
             <DockPanel>
                 <ToolBar DockPanel.Dock="Top">
                     <Button>
-                        <StackPanel Orientation="Vertical">
+                        <StackPanel>
                             <Image Source="/Images/plus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
                             <TextBlock>Add</TextBlock>
                         </StackPanel>
                     </Button>
                     <Button>
-                        <StackPanel Orientation="Vertical">
+                        <StackPanel>
                             <Image Source="/Images/minus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
                             <TextBlock>Remove</TextBlock>
                         </StackPanel>
                     </Button>
                 </ToolBar>
-                
+
                 <DataGrid>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name"/>
