@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tasks4U.Models;
-using static Tasks4U.ViewModels.TaskViewModel;
 
 namespace Tasks4U.ViewModels
 {
-    public class TaskDateViewModel : ObservableObject
+    public class TaskDateViewModel : ObservableValidator
     {
         // The date that should be written to the model - 
-        // the selected date if frequency is Once.
+        // the selected date if frequency is Once (or minimum date if date is not selected).
         // Otherwise, the next date that corresponds to the selected recurring date considering the frequeny.
         // For instance, if frequency is EveryWeek and Monday is selected, then TaskDate is next monday.
         // This week we can save dates in the database in the same format
@@ -20,7 +19,7 @@ namespace Tasks4U.ViewModels
             get
             {
                 if (TaskFrequency == Frequency.Once)
-                    return Date;
+                    return new DateOnly(_dateTime.Year, _dateTime.Month, _dateTime.Day);
 
                 var today = DateOnly.FromDateTime(DateTime.Today);
 
@@ -60,11 +59,11 @@ namespace Tasks4U.ViewModels
         public bool IsEveryYearFrequency => _taskFrequency == Frequency.EveryYear;
 
         // Used when Frequency is Once
-        private DateOnly _date;
-        public DateOnly Date
+        private DateTime _dateTime = DateTime.Today;
+        public DateTime Date
         {
-            get => _date;
-            set => SetProperty(ref _date, value);
+            get => _dateTime;
+            set => SetProperty(ref _dateTime, value);
         }
 
         // Used when Frequency is EveryWeek

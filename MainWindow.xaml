@@ -34,7 +34,7 @@
                     </Button>
 
                     <!-- Done button - the user should click on it when she's done with the new task parameters-->
-                    <Button 
+                    <Button Command="{Binding AddTaskCommand}"
                             Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                         <StackPanel>
                             <Image Source="/Images/check.png" Style="{StaticResource ToolbarButtonImageStyle}"/>

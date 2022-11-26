@@ -23,6 +23,7 @@ namespace Tasks4U.Views
         public NewTask()
         {
             InitializeComponent();
+            Loaded += (s, e) => Keyboard.Focus(NameTextBox);
         }
     }
 }

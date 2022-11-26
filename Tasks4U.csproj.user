@@ -24,6 +24,9 @@
     <Page Update="Resources\ComboBoxStyle.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Resources\DataGridStyle.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\NewTask.xaml">
       <SubType>Designer</SubType>
     </Page>

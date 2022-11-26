@@ -24,7 +24,7 @@ namespace Tasks4U.ViewModels
         public TaskDateViewModel FinalDateViewModel { get; } = new TaskDateViewModel();
 
         private string _name;
-        [Required(ErrorMessage = "Subject is Required")]
+        [Required(ErrorMessage = "Subject is required")]
         public string Name 
         {
             get => _name;
@@ -49,6 +49,18 @@ namespace Tasks4U.ViewModels
                 FinalDateViewModel.TaskFrequency = value;
             }
         }
+
+        private bool _isIntermediateDateEnabled;
+        public bool IsIntermediateDateEnabled
+        {
+            get => _isIntermediateDateEnabled;
+            set =>  SetProperty(ref _isIntermediateDateEnabled, value);
+        }
+
+        public DateOnly IntermediateDate => 
+            _isIntermediateDateEnabled ? IntermediateDateViewModel.TaskDate : DateOnly.MinValue;
+
+        public DateOnly FinalDate => FinalDateViewModel.TaskDate;
 
         public IEnumerable<FrequencyValue> FrequencyValues { get; } = new FrequencyValue[]
         {

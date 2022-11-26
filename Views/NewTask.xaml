@@ -11,7 +11,8 @@
     <Grid HorizontalAlignment="Stretch" 
           DataContext="{Binding NewTaskViewModel}" 
           Validation.ErrorTemplate="{x:Null}" 
-          FocusManager.FocusedElement="{Binding ElementName=NameTextBox}">
+          FocusManager.FocusedElement="{Binding ElementName=NameTextBox}"
+          FocusManager.IsFocusScope="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <!-- Name (Subject), Frequency and Dates  -->
@@ -66,7 +67,7 @@
         </Grid.Resources>
 
         <!-- Name (subject), frequency and dates on the left side -->
-        <DockPanel Grid.Column="0" Grid.Row="0">
+        <DockPanel FocusManager.IsFocusScope="True" Grid.Column="0" Grid.Row="0">
             <Label>Subject:</Label>
             <TextBox Name="NameTextBox" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
         </DockPanel>
@@ -80,8 +81,13 @@
         </DockPanel>
 
         <DockPanel Grid.Column="0" Grid.Row="4">
-            <Label>Intermediate Date:</Label>
-            <local:TaskDate DataContext="{Binding IntermediateDateViewModel}"/>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsIntermediateDateEnabled}"/>
+                <Label>Intermediate Date:</Label>
+            </StackPanel>
+            <ContentControl IsEnabled="{Binding IsIntermediateDateEnabled}">
+                <local:TaskDate DataContext="{Binding IntermediateDateViewModel}"/>
+            </ContentControl>
         </DockPanel>
 
         <DockPanel Grid.Column="0" Grid.Row="6">
