@@ -7,3 +7,7 @@
 /.vs/Tasks4U
 /bin/Debug/net6.0-windows
 /.vs/ProjectEvaluation
+/Task4UTests/bin/Debug/net6.0-windows
+/Task4UTests/obj
+/Tasks4U/bin/Debug/net6.0-windows
+/Tasks4U/obj
