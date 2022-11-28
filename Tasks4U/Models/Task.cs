@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,5 +22,10 @@ namespace Tasks4U.Models
         public DateOnly IntermmediateDate { get; set; }
         public DateOnly FinalDate { get; set; }
         public TaskStatus Status { get; set; }
+
+        // Yes, it's not MVVM to store IsSelected property in the model.
+        // But sometimes rules just have to be broken in order to simplify the code...
+        [NotMapped]
+        public bool IsSelected { get; set; }
     }
 }

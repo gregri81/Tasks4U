@@ -43,7 +43,7 @@ namespace Tasks4U.ViewModels
         {
             get => _taskFrequency;
             set
-            {
+            {                
                 SetProperty(ref _taskFrequency, value);
                 IntermediateDateViewModel.TaskFrequency = value;
                 FinalDateViewModel.TaskFrequency = value;
@@ -69,6 +69,7 @@ namespace Tasks4U.ViewModels
             new FrequencyValue("Every Month", Frequency.EveryMonth),
             new FrequencyValue("Every Year", Frequency.EveryYear)
         };
+
         public class FrequencyValue
         {
             public FrequencyValue(string name, Frequency value)

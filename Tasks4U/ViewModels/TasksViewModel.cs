@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using System.Xml.Linq;
 using Tasks4U.Models;
 
 namespace Tasks4U.ViewModels
@@ -16,20 +14,21 @@ namespace Tasks4U.ViewModels
 
         public TasksViewModel(TasksContext tasksContext)
         {
-            AddTaskCommand = new RelayCommand(AddTask);
-            RemoveTaskCommand = new RelayCommand(RemoveTask);
+            RemoveSelectedTasksCommand = new RelayCommand(RemoveSelectedTasks);
             ShowNewTaskCommand = new RelayCommand(ShowNewTask);
+            AddTaskCommand = new RelayCommand(AddTask, () => !NewTaskViewModel.HasErrors);
+            NewTaskViewModel.ErrorsChanged += (s, e) => AddTaskCommand.NotifyCanExecuteChanged();
 
             tasksContext.Database.EnsureCreated();
             _tasksContext = tasksContext;
             tasksContext.Tasks.Load();
         }
 
-        public ICommand AddTaskCommand { get; }
-        public ICommand RemoveTaskCommand { get; }
+        public ICommand RemoveSelectedTasksCommand { get; }
         public ICommand ShowNewTaskCommand { get; }
+        public RelayCommand AddTaskCommand { get; }
 
-        public IEnumerable<Task> Tasks => _tasksContext.Tasks.Local.ToObservableCollection();
+        public ObservableCollection<Task> Tasks => _tasksContext.Tasks.Local.ToObservableCollection();
         
         private bool _isNewTaskVisible = false;
         public bool IsNewTaskVisible
@@ -61,9 +60,12 @@ namespace Tasks4U.ViewModels
             ShowTasksList();
         }
 
-        private void RemoveTask()
+        private void RemoveSelectedTasks()
         {
-            
+            var tasksToRemove = Tasks.Where(t => t.IsSelected).ToArray();
+
+            foreach (var task in tasksToRemove)
+                Tasks.Remove(task);
         }
 
         private void ShowNewTask()

@@ -25,7 +25,7 @@
                     </Button>
                     
                     <!-- Remove button - for removing an existing task-->
-                    <Button 
+                    <Button Command="{Binding RemoveSelectedTasksCommand}"
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                         <StackPanel>
                             <Image Source="/Images/minus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
