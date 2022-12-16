@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasks4U.ViewModels;
 
 namespace Tasks4U
 {
@@ -23,6 +24,21 @@ namespace Tasks4U
         public MainWindow()
         {
             InitializeComponent();
+
+            DataContextChanged += (s, e) => AddDataContextEventHandlers();
         }
+
+        private void AddDataContextEventHandlers()
+        {
+            if (DataContext is TasksViewModel tasksViewModel)
+            {
+                tasksViewModel.BeforeSave += () => 
+                { 
+                    // For some reason it works only if we call it twice
+                    DesksDataGrid.CommitEdit(); 
+                    DesksDataGrid.CommitEdit(); 
+                };
+            }
+        }        
     }
 }

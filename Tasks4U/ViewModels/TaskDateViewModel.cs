@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Tasks4U.Models;
 
@@ -8,6 +9,15 @@ namespace Tasks4U.ViewModels
 {
     public class TaskDateViewModel : ObservableValidator
     {
+        private const string _dateFormat = "dd/MM/yyyy";
+
+        private Func<DateOnly, string>? _nonRecurringDateValidation;
+
+        public TaskDateViewModel(Func<DateOnly, string>? nonRecurringDateValidation = null) =>
+            _nonRecurringDateValidation = nonRecurringDateValidation;
+
+        #region Properties
+
         // The date that should be written to the model - 
         // the selected date if frequency is Once (or minimum date if date is not selected).
         // Otherwise, the next date that corresponds to the selected recurring date considering the frequeny.
@@ -19,7 +29,11 @@ namespace Tasks4U.ViewModels
             get
             {
                 if (TaskFrequency == Frequency.Once)
-                    return new DateOnly(_dateTime.Year, _dateTime.Month, _dateTime.Day);
+                {
+                    return  DateOnly.TryParseExact(_dateText, _dateFormat, out DateOnly date) 
+                            ? date 
+                            : DateOnly.MinValue;
+                }
 
                 var today = DateOnly.FromDateTime(DateTime.Today);
 
@@ -38,7 +52,7 @@ namespace Tasks4U.ViewModels
                 return DateOnly.MinValue;
             }
         }
-
+        
         private Frequency _taskFrequency = Frequency.Once;
         public Frequency TaskFrequency
         {
@@ -59,11 +73,12 @@ namespace Tasks4U.ViewModels
         public bool IsEveryYearFrequency => _taskFrequency == Frequency.EveryYear;
 
         // Used when Frequency is Once
-        private DateTime _dateTime = DateTime.Today;
-        public DateTime Date
+        private string _dateText = DateTime.Now.ToString();
+        [CustomValidation(typeof(TaskDateViewModel), nameof(ValidateDateText))]
+        public string DateText
         {
-            get => _dateTime;
-            set => SetProperty(ref _dateTime, value);
+            get => _dateText;
+            set => SetProperty(ref _dateText, value, true);
         }
 
         // Used when Frequency is EveryWeek
@@ -116,6 +131,36 @@ namespace Tasks4U.ViewModels
         public IEnumerable<int> Days1To28 { get; } = Enumerable.Range(1, 28);
         public IEnumerable<MonthOfYear> Months { get; } = Enum.GetValues(typeof(MonthOfYear)).Cast<MonthOfYear>();
 
+        #endregion
+
+        #region methods
+
+        public static ValidationResult? ValidateDateText(string dateText, ValidationContext context)
+        {
+            if (!DateOnly.TryParseExact(dateText, _dateFormat, out DateOnly date))
+                return new ValidationResult("Date is not in valid format");
+
+            if (date.ToDateTime(TimeOnly.MinValue) < DateTime.Today)
+                return new ValidationResult("Date in the past? You need a flux capacitor.");
+
+            var taskDateViewModel = (TaskDateViewModel)context.ObjectInstance;
+
+            if (taskDateViewModel.TaskFrequency == Frequency.Once && 
+                taskDateViewModel._nonRecurringDateValidation != null)
+            {
+                string error = taskDateViewModel._nonRecurringDateValidation.Invoke(date);
+
+                if (error.Length > 0)
+                    return new ValidationResult(error);
+            }
+
+            return null;
+        }
+
+        public void ValidateDate() => ValidateProperty(DateText, nameof(DateText));
+
+        #endregion
+
         public enum MonthOfYear
         {
             January = 1,
@@ -130,6 +175,6 @@ namespace Tasks4U.ViewModels
             October = 10,
             November = 11,
             December = 12
-        }
+        }       
     }
 }

@@ -33,7 +33,9 @@
         <Setter Property="TextBlock.TextAlignment" Value="Center"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
 
+    <Style x:Key="UnselectableDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{x:Null}" />

@@ -1,7 +1,6 @@
 using Tasks4U.ViewModels;
 using Tasks4U.Models;
 using Task = Tasks4U.Models.Task;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Task4UTests
 {
@@ -13,6 +12,7 @@ namespace Task4UTests
         [TestInitialize]
         public void DeleteTasks()
         {
+            _tasksContext.Database.EnsureCreated();
             _tasksContext.Tasks.RemoveRange(_tasksContext.Tasks);
             _tasksContext.SaveChanges();
         }
@@ -36,7 +36,7 @@ namespace Task4UTests
             _tasksContext.Tasks.Local.CollectionChanged += (s, e) =>
                tasksCount = _tasksContext.Tasks.Local.Count();
 
-            _tasksContext.Tasks.Add(task1);           
+            _tasksContext.Tasks.Add(task1);
             Assert.AreEqual(tasksCount, 1);
 
             _tasksContext.Tasks.Add(task2);

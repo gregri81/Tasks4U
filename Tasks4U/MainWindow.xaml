@@ -4,81 +4,100 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tasks4U" xmlns:views="clr-namespace:Tasks4U.Views"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Background="AliceBlue"       
-        Title="Tasks4U" Height="450" Width="1000">
-    <TabControl>
-        <!-- Tasks tab-->
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock Text="Tasks" Style="{StaticResource TabItemTextBlockStyle}"/>
-            </TabItem.Header>
-            <DockPanel>
-                <ToolBar DockPanel.Dock="Top">
-                    <!-- Add button - show the NewTask UserControl-->
-                    <Button Command="{Binding ShowNewTaskCommand}" 
+        Title="Tasks4U" Height="450" Width="1222">
+    <DockPanel>
+        <TabControl>
+            <TabControl.Resources>
+                <Style TargetType="Image" BasedOn="{StaticResource ToolbarButtonImageStyle}"/>
+            </TabControl.Resources>
+            <!-- Tasks tab-->
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Tasks" Style="{StaticResource TabItemTextBlockStyle}"/>
+                </TabItem.Header>
+                <DockPanel>
+                    <ToolBar DockPanel.Dock="Top">
+                        <!-- Add button - show the NewTask UserControl-->
+                        <Button Command="{Binding ShowNewTaskCommand}" 
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                        <StackPanel>
-                            <Image Source="/Images/plus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
-                            <TextBlock>Add</TextBlock>
-                        </StackPanel>
-                    </Button>
-                    
-                    <!-- Remove button - for removing an existing task-->
-                    <Button Command="{Binding RemoveSelectedTasksCommand}"
-                            Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                        <StackPanel>
-                            <Image Source="/Images/minus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
-                            <TextBlock>Remove</TextBlock>
-                        </StackPanel>
-                    </Button>
+                            <StackPanel>
+                                <Image Source="/Images/plus.png"/>
+                                <TextBlock>Add</TextBlock>
+                            </StackPanel>
+                        </Button>
 
-                    <!-- Done button - the user should click on it when she's done with the new task parameters-->
-                    <Button Command="{Binding AddTaskCommand}"
+                        <!-- Remove button - for removing an existing task-->
+                        <Button Command="{Binding RemoveSelectedTasksCommand}"
+                            Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel>
+                                <Image Source="/Images/minus.png"/>
+                                <TextBlock>Remove</TextBlock>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Save button - the user should click on it when she wants to save changes. -->
+                        <Button Command="{Binding SaveCommand}"
+                                    Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel ToolTip="Save Everything (Tasks and Desks)">
+                                <Image Source="/Images/save.png"/>
+                                <TextBlock Text="Save"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Done button - the user should click on it when she's done with the new task parameters-->
+                        <Button Command="{Binding AddTaskCommand}"
                             Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                        <StackPanel>
-                            <Image Source="/Images/check.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
-                            <TextBlock>Done</TextBlock>
-                        </StackPanel>
-                    </Button>
-                </ToolBar>
+                            <StackPanel>
+                                <Image Source="/Images/check.png"/>
+                                <TextBlock>Done</TextBlock>
+                            </StackPanel>
+                        </Button>
 
-                <Grid>
-                    <views:TasksList Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
-                    <views:NewTask                         
+                    </ToolBar>
+
+                    <Grid>
+                        <views:TasksList Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <views:NewTask                         
                         Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
-                </Grid>
-            </DockPanel>
-        </TabItem>
+                    </Grid>
+                </DockPanel>
+            </TabItem>
 
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock Text="Desks" Style="{StaticResource TabItemTextBlockStyle}"/>
-            </TabItem.Header>
-            <DockPanel>
-                <ToolBar DockPanel.Dock="Top">
-                    <Button>
-                        <StackPanel>
-                            <Image Source="/Images/plus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
-                            <TextBlock>Add</TextBlock>
-                        </StackPanel>
-                    </Button>
-                    <Button>
-                        <StackPanel>
-                            <Image Source="/Images/minus.png" Style="{StaticResource ToolbarButtonImageStyle}"/>
-                            <TextBlock>Remove</TextBlock>
-                        </StackPanel>
-                    </Button>
-                </ToolBar>
+            <!-- Desks Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Desks" Style="{StaticResource TabItemTextBlockStyle}"/>
+                </TabItem.Header>
+                <DockPanel>
+                    <ToolBar DockPanel.Dock="Top">
+                        <!-- Save button - the user should click on it when she wants to save changes. -->
+                        <Button Command="{Binding SaveCommand}">
+                            <StackPanel ToolTip="Save Everything (Tasks and Desks)">
+                                <Image Source="/Images/save.png"/>
+                                <TextBlock Text="{Binding SaveButtonText}"/>
+                            </StackPanel>
+                        </Button>
+                    </ToolBar>
 
-                <DataGrid>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name"/>
-                        <DataGridTextColumn Header="Description"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </DockPanel>
-        </TabItem>
-    </TabControl>
-
+                    <DataGrid x:Name="DesksDataGrid"
+                              ItemsSource="{Binding Desks,UpdateSourceTrigger=PropertyChanged}" 
+                              CanUserAddRows="True" CanUserDeleteRows="True" SelectionUnit="FullRow">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectedCellsChanged">
+                                <i:InvokeCommandAction Command="{Binding MarkAsModifiedIfNeededCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="Description" Width="2*" Binding="{Binding Description}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </Window>

@@ -4,12 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Tasks4U.Views"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <!-- When frequency is Once -->
-        <DatePicker SelectedDate="{Binding Date}"
-                    Visibility="{Binding IsOnceFrequency,Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <DatePicker Visibility="{Binding IsOnceFrequency,Converter={StaticResource BoolToVisibilityConverter}}"
+                    Text="{Binding DateText,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                    DisplayDateStart="{Binding Mode=OneWay, Source={x:Static System:DateTime.Today}}"/>
 
         <!-- When frequency is Every Week -->
         <ComboBox 
@@ -25,7 +28,7 @@
         <DockPanel 
                         Visibility="{Binding IsEveryYearFrequency,Converter={StaticResource BoolToVisibilityConverter}}">
             <!-- Day -->
-            <ComboBox DockPanel.Dock="Right" Width="45"
+            <ComboBox DockPanel.Dock="Right"
                         ItemsSource="{Binding DaysInMonth}" SelectedValue="{Binding DayInMonth}"/>
 
             <!-- Month -->

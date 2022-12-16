@@ -19,6 +19,7 @@
     <None Remove="Images\check.png" />
     <None Remove="Images\minus.png" />
     <None Remove="Images\plus.png" />
+    <None Remove="Images\save.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,11 +29,16 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
   </ItemGroup>
 
@@ -40,6 +46,7 @@
     <Resource Include="Images\check.png" />
     <Resource Include="Images\minus.png" />
     <Resource Include="Images\plus.png" />
+    <Resource Include="Images\save.png" />
   </ItemGroup>
 
 </Project>

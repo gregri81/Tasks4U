@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using Tasks4U.Models;
 using Tasks4U.ViewModels;
 using static Tasks4U.ViewModels.TaskDateViewModel;
@@ -54,7 +53,7 @@ namespace Task4UTests
         [TestMethod]
         public void TestDateProperties()
         {
-            var date = DateTime.MinValue;
+            var dateText = string.Empty;
             var weekDay = DayOfWeek.Sunday;
             var day = 0;
             var month = MonthOfYear.January;
@@ -65,8 +64,8 @@ namespace Task4UTests
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(TaskDateViewModel.Date):
-                        date = taskDateViewModel.Date;
+                    case nameof(TaskDateViewModel.DateText):
+                        dateText = taskDateViewModel.DateText;
                         break;
                     case nameof(TaskDateViewModel.WeekDay):
                         weekDay = taskDateViewModel.WeekDay;
@@ -80,17 +79,17 @@ namespace Task4UTests
                 }
             };
 
-            var expectedDate = new DateTime(1, 2, 3);
+            var expectedDate = new DateTime(1, 2, 3).ToString();
             var expectedWeekDay = DayOfWeek.Wednesday;
             var expectedDay = 5;
             var expectedMonth = MonthOfYear.May;
 
-            taskDateViewModel.Date = expectedDate;
+            taskDateViewModel.DateText = expectedDate;
             taskDateViewModel.WeekDay = expectedWeekDay;
             taskDateViewModel.Day = expectedDay;
             taskDateViewModel.Month = expectedMonth;
 
-            Assert.AreEqual(expectedDate, taskDateViewModel.Date);
+            Assert.AreEqual(expectedDate, taskDateViewModel.DateText);
             Assert.AreEqual(expectedWeekDay, taskDateViewModel.WeekDay);
             Assert.AreEqual(expectedMonth, taskDateViewModel.Month);
             Assert.AreEqual(expectedDay, taskDateViewModel.Day);
@@ -137,7 +136,7 @@ namespace Task4UTests
             
             // Once
             taskDateViewModel.TaskFrequency = Frequency.Once;
-            taskDateViewModel.Date = new DateTime(today.Year, today.Month, today.Day);
+            taskDateViewModel.DateText = new DateOnly(today.Year, today.Month, today.Day).ToString();
             Assert.AreEqual(today, taskDateViewModel.TaskDate);
 
             // Every Week
@@ -173,6 +172,39 @@ namespace Task4UTests
                 nextDate = nextDate.AddYears(1);
 
             Assert.AreEqual(nextDate, taskDateViewModel.TaskDate);
+        }
+
+        [TestMethod]
+        public void ValidationTest()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            var tomorrow = DateOnly.FromDateTime(DateTime.Now).AddDays(1);
+            var yesterday = today.AddDays(-1);
+
+            var nonRecurringDateValidation = (DateOnly dateOnly) => dateOnly == today ? "today" : string.Empty;
+
+            var taskDateViewModel = new TaskDateViewModel(nonRecurringDateValidation);
+
+            // Assert validation using the function given in TaskDateViewModel consturctor
+            var validationResult = ValidateDateText(today.ToString(), new ValidationContext(taskDateViewModel));
+            Assert.AreEqual("today", validationResult?.ErrorMessage);
+
+            validationResult = ValidateDateText(tomorrow.ToString(), new ValidationContext(taskDateViewModel));
+            Assert.IsNull(validationResult);
+
+
+            // Make sure that this validation is not performed when frequency is not 'once'
+            taskDateViewModel.TaskFrequency = Frequency.EveryWeek;
+            validationResult = ValidateDateText(today.ToString(), new ValidationContext(taskDateViewModel));
+            Assert.IsNull(validationResult);
+
+            // Assert validation when date format is not correct
+            validationResult = ValidateDateText(today.ToString() + "a", new ValidationContext(taskDateViewModel));
+            Assert.AreEqual("Date is not in valid format", validationResult?.ErrorMessage);
+
+            // Assert validtation when date is in the past
+            validationResult = ValidateDateText(yesterday.ToString(), new ValidationContext(taskDateViewModel));
+            Assert.AreEqual("Date in the past? You need a flux capacitor.", validationResult?.ErrorMessage);
         }
     }
 }

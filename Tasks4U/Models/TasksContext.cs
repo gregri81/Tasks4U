@@ -11,12 +11,14 @@ namespace Tasks4U.Models
     {
         private string _connectionString;
 
-        public TasksContext(string connectionString)
+        public TasksContext(string connectionString= "Data Source=tasks.db")
         {
             _connectionString = connectionString;
         }
 
         public DbSet<Task> Tasks => Set<Task>();
+
+        public DbSet<Desk> Desks => Set<Desk>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite(_connectionString);
     }

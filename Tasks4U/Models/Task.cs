@@ -18,8 +18,9 @@ namespace Tasks4U.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; } = string.Empty;
+        public Desk? Desk { get; set; }
         public Frequency TaskFrequency { get; set; }
-        public DateOnly IntermmediateDate { get; set; }
+        public DateOnly IntermediateDate { get; set; }
         public DateOnly FinalDate { get; set; }
         public TaskStatus Status { get; set; }
 

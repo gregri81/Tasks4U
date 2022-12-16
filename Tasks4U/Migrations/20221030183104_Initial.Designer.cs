@@ -32,7 +32,7 @@ namespace Tasks4U.Migrations
                     b.Property<DateOnly>("FinalDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateOnly>("IntermmediateDate")
+                    b.Property<DateOnly>("IntermediateDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")

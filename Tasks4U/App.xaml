@@ -38,6 +38,12 @@
             <Style x:Key="ToolbarButtonImageStyle" TargetType="Image">
                 <Setter Property="Width" Value="15"/>
                 <Setter Property="Margin" Value="-3"/>
+
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.5" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
 
             <Style TargetType="ToolBar">
@@ -55,6 +61,17 @@
             <SolidColorBrush x:Key="ErrorBrush" Color="Red"/>
 
             <Style TargetType="TextBox">
+                <Style.Setters>
+                    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>
+                </Style.Setters>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="DatePicker">
                 <Style.Setters>
                     <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>
                 </Style.Setters>

@@ -25,4 +25,16 @@ namespace Tasks4U.Views
             InitializeComponent();
         }
     }
+
+    public class DatePickerValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        {
+            var date = (DateTime)value;
+
+            return date.Date.CompareTo(DateTime.Now) < 0
+                ? new ValidationResult(false, "the date can not be before today")
+                : new ValidationResult(true, null);
+        }
+    }
 }

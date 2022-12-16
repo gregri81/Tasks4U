@@ -14,13 +14,51 @@ namespace Tasks4U.ViewModels
 {
     public class TaskViewModel : ObservableValidator
     {
+        public event Action? IsValidChanged;
+
         public TaskViewModel()
         {
             // Set name explicitly in order to cause validation
             _name = Name = "";
+
+            var intermediateDateValidator = (DateOnly date) =>
+                _isIntermediateDateEnabled && !FinalDateViewModel.HasErrors && date >= FinalDate
+                ? "Must be earlier than final date"
+                : string.Empty;
+
+            IntermediateDateViewModel = new TaskDateViewModel(intermediateDateValidator);            
+
+            FinalDateViewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(FinalDateViewModel.DateText))
+                    IntermediateDateViewModel.ValidateDate();
+            };
+
+            FinalDateViewModel.ErrorsChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(FinalDateViewModel.DateText))
+                    IntermediateDateViewModel.ValidateDate();
+            };
+
+            ErrorsChanged += (s, e) => IsValidChanged?.Invoke();
+            IntermediateDateViewModel.ErrorsChanged += (s, e) => IsValidChanged?.Invoke();
+            FinalDateViewModel.ErrorsChanged += (s, e) => IsValidChanged?.Invoke();
         }
 
-        public TaskDateViewModel IntermediateDateViewModel { get; } = new TaskDateViewModel();
+        public void Clear()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            IntermediateDateViewModel.DateText = today.ToString();
+            FinalDateViewModel.DateText = today.AddDays(1).ToString();
+            Name = string.Empty;
+            Description = string.Empty;
+            TaskFrequency = Frequency.Once;
+        }
+
+        public bool IsValid() => !HasErrors && !IntermediateDateViewModel.HasErrors && !FinalDateViewModel.HasErrors;
+
+        public TaskDateViewModel IntermediateDateViewModel { get; }
+            
         public TaskDateViewModel FinalDateViewModel { get; } = new TaskDateViewModel();
 
         private string _name;
@@ -38,6 +76,13 @@ namespace Tasks4U.ViewModels
             set => SetProperty(ref _description, value);
         }
 
+        private string _relatedTo = string.Empty;
+        public string RelatedTo
+        {
+            get => _relatedTo;
+            set => SetProperty(ref _relatedTo, value);
+        }
+
         private Frequency _taskFrequency = Frequency.Once;
         public Frequency TaskFrequency 
         {
@@ -47,6 +92,7 @@ namespace Tasks4U.ViewModels
                 SetProperty(ref _taskFrequency, value);
                 IntermediateDateViewModel.TaskFrequency = value;
                 FinalDateViewModel.TaskFrequency = value;
+                IntermediateDateViewModel.ValidateDate();
             }
         }
 
@@ -54,7 +100,11 @@ namespace Tasks4U.ViewModels
         public bool IsIntermediateDateEnabled
         {
             get => _isIntermediateDateEnabled;
-            set =>  SetProperty(ref _isIntermediateDateEnabled, value);
+            set
+            {
+                SetProperty(ref _isIntermediateDateEnabled, value);
+                IntermediateDateViewModel.ValidateDate();
+            }
         }
 
         public DateOnly IntermediateDate => 

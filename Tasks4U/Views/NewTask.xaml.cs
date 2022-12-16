@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Tasks4U.Views
 {
@@ -23,7 +24,19 @@ namespace Tasks4U.Views
         public NewTask()
         {
             InitializeComponent();
-            Loaded += (s, e) => Keyboard.Focus(NameTextBox);
+
+            // Whe the UserControl becomes visible, set focus on Name TextBox when
+            IsVisibleChanged += (s, e) =>
+            {
+                if (Visibility == Visibility.Visible)
+                {
+                    Dispatcher.BeginInvoke((Action)delegate
+                    {
+                        FocusManager.SetFocusedElement(this, NameTextBox);
+                        Keyboard.Focus(NameTextBox);
+                    }, DispatcherPriority.Render);
+                }                
+            };
         }
     }
 }
