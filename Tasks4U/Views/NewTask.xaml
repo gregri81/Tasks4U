@@ -99,12 +99,15 @@
         <!-- Related-to, desk and description on the right side -->
         <DockPanel Grid.Column="2" Grid.Row="0">
             <Label>Related To:</Label>
-            <TextBox HorizontalAlignment="Stretch"/>
+            <TextBox Text="{Binding RelatedTo,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch"/>
         </DockPanel>
 
         <DockPanel Grid.Column="4" Grid.Row="0" HorizontalAlignment="Right" Width="300">
             <Label>Desk:</Label>
-            <ComboBox/>
+            <ComboBox ItemsSource="{Binding DeskValues}" 
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding Desk}"/>
         </DockPanel>
         
         <DockPanel Grid.Column="2" Grid.Row="2" Grid.RowSpan="6" Grid.ColumnSpan="3">

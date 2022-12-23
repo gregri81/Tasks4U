@@ -13,16 +13,13 @@ namespace Tasks4U.ViewModels
 {
     public class TasksViewModel : ObservableObject
     {
-        public event System.Action? BeforeSave;
-
-        private TasksContext _tasksContext;
+        private readonly TasksContext _tasksContext;
 
         public TasksViewModel(TasksContext tasksContext)
         {
             tasksContext.Database.EnsureCreated();
             _tasksContext = tasksContext;
             tasksContext.Tasks.Load();
-            tasksContext.Desks.Load();
 
             RemoveSelectedTasksCommand = new RelayCommand(RemoveSelectedTasks);
             
@@ -34,16 +31,8 @@ namespace Tasks4U.ViewModels
             
             SaveCommand = new RelayCommand(Save, () => IsModifiedSinceLastSave);
             
-            MarkAsModifiedIfNeededCommand = new RelayCommand(() => 
-            { 
-                if (_tasksContext.ChangeTracker.HasChanges()) 
-                    IsModifiedSinceLastSave = true; 
-            });
-
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
             Tasks.CollectionChanged += (e, s) => IsModifiedSinceLastSave = true;
-
-             Desks = _tasksContext.Desks.Local.ToObservableCollection();
         }
 
         #region properties
@@ -52,11 +41,8 @@ namespace Tasks4U.ViewModels
         public ICommand ShowNewTaskCommand { get; }
         public RelayCommand AddTaskCommand { get; }
         public RelayCommand SaveCommand { get; }
-        public RelayCommand MarkAsModifiedIfNeededCommand { get; }
 
         public ObservableCollection<Task> Tasks { get; }
-
-        public ObservableCollection<Desk> Desks { get; }
 
         private bool _isNewTaskVisible = false;
         public bool IsNewTaskVisible
@@ -100,6 +86,8 @@ namespace Tasks4U.ViewModels
             {
                 Description = NewTaskViewModel.Description,
                 TaskFrequency = NewTaskViewModel.TaskFrequency,
+                RelatedTo = NewTaskViewModel.RelatedTo,
+                Desk = NewTaskViewModel.Desk,
                 IntermediateDate = NewTaskViewModel.IntermediateDate,
                 FinalDate = NewTaskViewModel.FinalDate
             };
@@ -132,20 +120,7 @@ namespace Tasks4U.ViewModels
 
         private void Save()
         {
-            BeforeSave?.Invoke();
-
-            // Don't save empty rows in desks datagrid
-            var emptyDesks = _tasksContext.Desks.Local.Where(d => d.Name.Length == 0 && d.Description.Length == 0);
-            _tasksContext.Desks.RemoveRange(emptyDesks);
-
-            if (_tasksContext.Desks.Local.Any(d => d.Name.Length == 0))
-            {
-                MessageBox.Show("You cannot fill in description without name", "Empty name", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
             _tasksContext.SaveChanges();
-
             IsModifiedSinceLastSave = false;
         }
 

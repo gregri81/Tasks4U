@@ -9,7 +9,7 @@
              Padding="3">
     <DataGrid ItemsSource="{Binding Tasks}" CanUserAddRows="False" VerticalAlignment="Top" BorderThickness="1 1 1 0" IsReadOnly="True">
         <DataGrid.Resources>
-            <converters:SummaryConverter x:Key="summaryConverter"/>
+            <converters:FirstLineConverter x:Key="firstLineConverter"/>
             <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}"/>
         </DataGrid.Resources>
         <DataGrid.Columns>
@@ -22,7 +22,7 @@
             </DataGridTemplateColumn>
             <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
             
-            <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource summaryConverter}}" Width="2*">
+            <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource firstLineConverter}}" Width="2*">
                 <DataGridTextColumn.CellStyle>
                     <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}">
                         <Setter Property="ToolTip" Value="{Binding Description}"/>
@@ -31,7 +31,7 @@
             </DataGridTextColumn>
             
             <DataGridTextColumn Header="Related To" Binding="{Binding RelatedTo}" Width="2*"/>
-            <DataGridTextColumn Header="Desk" Binding="{Binding RelatedTo}" Width="*"/>
+            <DataGridTextColumn Header="Desk" Binding="{Binding Desk}" Width="*"/>
             <DataGridTextColumn Header="Task Frequency" Binding="{Binding TaskFrequency}" Width="*"/>
             <DataGridTextColumn Header="Intermediate Date" Binding="{Binding IntermediateDate}" Width="*"/>
             <DataGridTextColumn Header="Final Date" Binding="{Binding FinalDate}" Width="*"/>

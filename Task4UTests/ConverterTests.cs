@@ -7,31 +7,22 @@ namespace Task4UTests
     public class ConverterTests
     {
         [TestMethod]
-        public void TestSummaryConverter()
+        public void TestFirstLineConverter()
         {
-            var summaryConverter = new SummaryConverter();
+            var firstLineConverter = new FirstLineConverter();
             
             // Assert that we take only the first line
-            Assert.AreEqual("123", 
-                            summaryConverter.Convert("123\n45678901", typeof(string), 10, CultureInfo.InvariantCulture));
-
-            Assert.AreEqual("123",
-                            summaryConverter.Convert("123\r45678901", typeof(string), 10, CultureInfo.InvariantCulture));
+            Assert.AreEqual("line1", 
+                            firstLineConverter.Convert("line1\nline2", typeof(string), null, CultureInfo.InvariantCulture));
 
             // Assert that an empty string remains empty
             Assert.AreEqual("",
-                            summaryConverter.Convert("", typeof(string), 10, CultureInfo.InvariantCulture));
+                            firstLineConverter.Convert("", typeof(string), 10, CultureInfo.InvariantCulture));
 
-            // Assert that if the first line is too long, we take up to n characters (according to the parameter)
-            Assert.AreEqual("1234567890",
-                            summaryConverter.Convert("12345678901\n2", typeof(string), 10, CultureInfo.InvariantCulture));
 
-            // Assert that if the first line is too long, we take up to n characters (according to the parameter)
-            Assert.AreEqual("1234567890",
-                            summaryConverter.Convert("12345678901\n2", typeof(string), 10, CultureInfo.InvariantCulture));
-
-            Assert.AreEqual("1234567890",
-                            summaryConverter.Convert("12345678901", typeof(string), 10, CultureInfo.InvariantCulture));
+            // Assert that if there is only one line, we take the whole string
+            Assert.AreEqual("line1",
+                            firstLineConverter.Convert("line1", typeof(string), 10, CultureInfo.InvariantCulture));
         }
     }
 }

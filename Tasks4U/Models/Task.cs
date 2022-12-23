@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tasks4U.Models
 {
+    public enum Desk {General, USA, UK, Canada };
     public enum TaskStatus { NotStarted, InProgress, Pending, Finished};
 
     public enum Frequency { Once, EveryWeek, EveryMonth, EveryYear };
@@ -17,8 +18,9 @@ namespace Tasks4U.Models
 
         public int ID { get; set; }
         public string Name { get; set; }
+        public string RelatedTo { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public Desk? Desk { get; set; }
+        public Desk Desk { get; set; }
         public Frequency TaskFrequency { get; set; }
         public DateOnly IntermediateDate { get; set; }
         public DateOnly FinalDate { get; set; }

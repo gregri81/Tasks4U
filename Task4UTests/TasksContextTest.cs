@@ -7,7 +7,7 @@ namespace Task4UTests
     [TestClass]
     public class TasksContextTest
     {
-        private TasksContext _tasksContext = new TasksContext("Data Source=test.db");
+        private TasksContext _tasksContext = new("Data Source=test.db");
 
         [TestInitialize]
         public void DeleteTasks()

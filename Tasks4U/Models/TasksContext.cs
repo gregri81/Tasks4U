@@ -18,8 +18,6 @@ namespace Tasks4U.Models
 
         public DbSet<Task> Tasks => Set<Task>();
 
-        public DbSet<Desk> Desks => Set<Desk>();
-
         protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite(_connectionString);
     }
 }

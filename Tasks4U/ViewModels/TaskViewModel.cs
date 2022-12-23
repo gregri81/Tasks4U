@@ -10,12 +10,16 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Tasks4U.Models;
 
+
 namespace Tasks4U.ViewModels
 {
+    using FrequencyValue = TaskViewModel.NameAndValue<Frequency>;
+    using DeskValue = TaskViewModel.NameAndValue<Desk>;
+
     public class TaskViewModel : ObservableValidator
     {
         public event Action? IsValidChanged;
-
+        
         public TaskViewModel()
         {
             // Set name explicitly in order to cause validation
@@ -96,6 +100,13 @@ namespace Tasks4U.ViewModels
             }
         }
 
+        private Desk _desk = Desk.General;
+        public Desk Desk
+        {
+            get => _desk;
+            set=> SetProperty(ref _desk, value);
+        }
+
         private bool _isIntermediateDateEnabled;
         public bool IsIntermediateDateEnabled
         {
@@ -120,16 +131,24 @@ namespace Tasks4U.ViewModels
             new FrequencyValue("Every Year", Frequency.EveryYear)
         };
 
-        public class FrequencyValue
+        public IEnumerable<DeskValue> DeskValues { get; } = new DeskValue[]
         {
-            public FrequencyValue(string name, Frequency value)
+            new DeskValue("General", Desk.General),
+            new DeskValue("USA", Desk.USA),
+            new DeskValue("UK", Desk.UK),
+            new DeskValue("Canada", Desk.Canada)
+        };
+
+        public class NameAndValue<T>
+        {
+            public NameAndValue(string name, T value)
             {
                 Name = name;
                 Value = value;
             }
 
             public string Name { get; set; }
-            public Frequency Value { get; set; }
+            public T Value { get; set; }
         }
     }
 }

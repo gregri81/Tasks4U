@@ -13,6 +13,7 @@ namespace Task4UTests
             var description = string.Empty;
             var relatedTo = string.Empty;
             var taskFrequency = Frequency.Once;
+            var desk = Desk.General;
             var intermediateDate = DateOnly.MinValue;
             var finalDate = DateOnly.MinValue;
 
@@ -31,17 +32,25 @@ namespace Task4UTests
                     case nameof(TaskViewModel.TaskFrequency):
                         taskFrequency = taskViewModel.TaskFrequency;
                         break;
+                    case nameof(TaskViewModel.RelatedTo):
+                        relatedTo = taskViewModel.RelatedTo;
+                        break;
+                    case nameof(TaskViewModel.Desk):
+                        desk = taskViewModel.Desk;
+                        break;
                 }
             };
 
             taskViewModel.Name = "name";
             taskViewModel.Description = "description";
-            taskViewModel.RelatedTo = relatedTo;
+            taskViewModel.RelatedTo = "donor";
+            taskViewModel.Desk = Desk.USA;
             taskViewModel.TaskFrequency = Frequency.EveryWeek;
 
             Assert.AreEqual(name, taskViewModel.Name);
             Assert.AreEqual(description, taskViewModel.Description);
             Assert.AreEqual(relatedTo, taskViewModel.RelatedTo);
+            Assert.AreEqual(desk, taskViewModel.Desk);
             Assert.AreEqual(taskFrequency, taskViewModel.TaskFrequency);
 
             // Test that Clear function works
