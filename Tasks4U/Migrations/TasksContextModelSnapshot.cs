@@ -52,6 +52,9 @@ namespace Tasks4U.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Tasks");
                 });
 #pragma warning restore 612, 618

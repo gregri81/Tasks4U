@@ -11,8 +11,8 @@ using Tasks4U.Models;
 namespace Tasks4U.Migrations
 {
     [DbContext(typeof(TasksContext))]
-    [Migration("20221222162124_RelatedTo")]
-    partial class RelatedTo
+    [Migration("20221223085244_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,6 +53,9 @@ namespace Tasks4U.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Tasks");
                 });

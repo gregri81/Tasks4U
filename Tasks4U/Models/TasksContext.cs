@@ -18,6 +18,10 @@ namespace Tasks4U.Models
 
         public DbSet<Task> Tasks => Set<Task>();
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite(_connectionString);
+        protected override void OnConfiguring(DbContextOptionsBuilder options) => 
+            options.UseSqlite(_connectionString);
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<Task>().HasIndex(s => s.Name).IsUnique();
     }
 }

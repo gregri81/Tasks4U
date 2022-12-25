@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -120,10 +121,28 @@ namespace Tasks4U.ViewModels
 
         private void Save()
         {
-            _tasksContext.SaveChanges();
+            try
+            {
+                _tasksContext.SaveChanges();
+            }
+            catch(DbUpdateException exception) when (exception.InnerException != null)
+            {
+                if (exception.InnerException.Message.EndsWith("'UNIQUE constraint failed: Tasks.Name'."))
+                    ShowSubjectNotUniqueMessageBox(exception);
+            }
+
             IsModifiedSinceLastSave = false;
         }
 
+        private void ShowSubjectNotUniqueMessageBox(DbUpdateException exception)
+        {
+            var message = "You cannot use the same subject twice.";
+
+            if (exception.Entries.Count > 0 && exception.Entries[0].Entity is Task task)
+                message += " Subject: " + task.Name;
+
+            MessageBox.Show(message, "Subject must be unique", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
         
         #endregion
     }

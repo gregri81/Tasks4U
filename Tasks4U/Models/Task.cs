@@ -17,6 +17,7 @@ namespace Tasks4U.Models
         public Task(string name) => Name = name;
 
         public int ID { get; set; }
+
         public string Name { get; set; }
         public string RelatedTo { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
