@@ -13,8 +13,7 @@ using Tasks4U.Models;
 
 namespace Tasks4U.ViewModels
 {
-    using FrequencyValue = TaskViewModel.NameAndValue<Frequency>;
-    using DeskValue = TaskViewModel.NameAndValue<Desk>;
+    using TaskStatus = Models.TaskStatus;
 
     public class TaskViewModel : ObservableValidator
     {
@@ -100,11 +99,18 @@ namespace Tasks4U.ViewModels
             }
         }
 
+        private TaskStatus _status;
+        public TaskStatus Status
+        {
+            get => _status;
+            set => SetProperty(ref _status, value);
+        }
+        
         private Desk _desk = Desk.General;
         public Desk Desk
         {
             get => _desk;
-            set=> SetProperty(ref _desk, value);
+            set => SetProperty(ref _desk, value);
         }
 
         private bool _isIntermediateDateEnabled;
@@ -118,37 +124,34 @@ namespace Tasks4U.ViewModels
             }
         }
 
-        public DateOnly IntermediateDate => 
-            _isIntermediateDateEnabled ? IntermediateDateViewModel.TaskDate : DateOnly.MinValue;
-
-        public DateOnly FinalDate => FinalDateViewModel.TaskDate;
-
-        public IEnumerable<FrequencyValue> FrequencyValues { get; } = new FrequencyValue[]
+        public DateOnly IntermediateDate
         {
-            new FrequencyValue("Once", Frequency.Once),
-            new FrequencyValue("Every Week", Frequency.EveryWeek),
-            new FrequencyValue("Every Month", Frequency.EveryMonth),
-            new FrequencyValue("Every Year", Frequency.EveryYear)
-        };
+            get => _isIntermediateDateEnabled ? IntermediateDateViewModel.TaskDate : DateOnly.MinValue;
 
-        public IEnumerable<DeskValue> DeskValues { get; } = new DeskValue[]
-        {
-            new DeskValue("General", Desk.General),
-            new DeskValue("USA", Desk.USA),
-            new DeskValue("UK", Desk.UK),
-            new DeskValue("Canada", Desk.Canada)
-        };
-
-        public class NameAndValue<T>
-        {
-            public NameAndValue(string name, T value)
+            set
             {
-                Name = name;
-                Value = value;
+                if (value == DateOnly.MinValue)
+                {
+                    IsIntermediateDateEnabled = false;
+                }
+                else
+                {
+                    IsIntermediateDateEnabled = true;
+                    IntermediateDateViewModel.TaskDate = value;
+                }
             }
-
-            public string Name { get; set; }
-            public T Value { get; set; }
         }
+
+        public DateOnly FinalDate
+        {
+            get => FinalDateViewModel.TaskDate;
+            set => FinalDateViewModel.TaskDate = value;
+        }
+
+        public static Array FrequencyValues => Enum.GetValues(typeof(Frequency));
+
+        public static Array StatusValues => Enum.GetValues(typeof(TaskStatus));
+
+        public static Array DeskValues => Enum.GetValues(typeof(Desk));
     }
 }

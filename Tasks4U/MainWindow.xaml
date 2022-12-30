@@ -7,7 +7,13 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Background="AliceBlue"       
-        Title="Tasks4U" Height="450" Width="1222">
+        Title="Tasks4U" Height="450" Width="1414">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding HandleWindowClosingCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     
     <DockPanel>
         <DockPanel.Resources>
@@ -15,7 +21,7 @@
         </DockPanel.Resources>
 
         <ToolBar DockPanel.Dock="Top">
-            <!-- Add button - show the NewTask UserControl-->
+            <!-- Add button - shows the NewTask UserControl-->
             <Button Command="{Binding ShowNewTaskCommand}" 
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel>
@@ -24,6 +30,15 @@
                 </StackPanel>
             </Button>
 
+            <!-- Edit button - shows the NewTask UserControl with parameters filled in from the selected task-->
+            <Button Command="{Binding EditTaskCommand}" 
+                            Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel>
+                    <Image Source="/Images/edit.png"/>
+                    <TextBlock>Edit</TextBlock>
+                </StackPanel>
+            </Button>
+            
             <!-- Remove button - for removing an existing task-->
             <Button Command="{Binding RemoveSelectedTasksCommand}"
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
@@ -42,6 +57,15 @@
                 </StackPanel>
             </Button>
 
+            <!-- Cancel button - the user should click on it when she's done with the new task parameters-->
+            <Button Command="{Binding ShowTasksCommand}"
+                    Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel>
+                    <Image Source="/Images/cancel.png"/>
+                    <TextBlock>Cancel</TextBlock>
+                </StackPanel>
+            </Button>
+
             <!-- Done button - the user should click on it when she's done with the new task parameters-->
             <Button Command="{Binding AddTaskCommand}"
                             Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
@@ -50,7 +74,7 @@
                     <TextBlock>Done</TextBlock>
                 </StackPanel>
             </Button>
-
+            
         </ToolBar>
 
         <Grid>

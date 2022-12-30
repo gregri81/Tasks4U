@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Tasks4U.Models
 {
-    public enum Desk {General, USA, UK, Canada };
-    public enum TaskStatus { NotStarted, InProgress, Pending, Finished};
+    public enum Desk { General, USA, UK, Canada };
+    public enum TaskStatus { NotStarted, InProgress, Pending, Finished };
 
     public enum Frequency { Once, EveryWeek, EveryMonth, EveryYear };
 
@@ -29,7 +29,18 @@ namespace Tasks4U.Models
 
         // Yes, it's not MVVM to store IsSelected property in the model.
         // But sometimes rules just have to be broken in order to simplify the code...
+        private bool _isSelected;
         [NotMapped]
-        public bool IsSelected { get; set; }
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                IsSelectedChanged?.Invoke();
+            }
+        }
+
+        public event Action? IsSelectedChanged;
     }
 }

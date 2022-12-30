@@ -1,6 +1,7 @@
 ﻿using Tasks4U.Models;
 using Tasks4U.ViewModels;
 using Task = Tasks4U.Models.Task;
+using TaskStatus = Tasks4U.Models.TaskStatus;
 
 namespace Task4UTests
 {
@@ -17,12 +18,22 @@ namespace Task4UTests
             Assert.AreEqual(_tasksViewModel.Tasks.Count(), 0);
 
         [TestMethod]
-        public void TasksAddedAndRemoved()
+        public void TasksAddedEditedAndRemoved()
         {
             // Add first task
-            var taskViewModel1 = new TaskViewModel { Name = "task1" };
+            var taskViewModel1 = new TaskViewModel
+            {
+                Name = "task1",
+                TaskFrequency = Frequency.EveryWeek,
+                Status = TaskStatus.InProgress,
+                Desk = Desk.USA,
+                Description = "description",
+                IntermediateDate = DateOnly.MaxValue,
+                FinalDate = DateOnly.MaxValue,
+                RelatedTo = "related"
+            };
 
-            _tasksViewModel.NewTaskViewModel = taskViewModel1;
+            _tasksViewModel.NewTaskViewModel = taskViewModel1;            
             _tasksViewModel.AddTaskCommand.Execute(null);
             
             Assert.AreEqual(_tasksViewModel.Tasks.Count(), 1);
@@ -37,9 +48,23 @@ namespace Task4UTests
             Assert.AreEqual(2, _tasksViewModel.Tasks.Count());
             Assert.AreEqual("task2", _tasksViewModel.Tasks.Skip(1).First().Name);
 
-            // Remove first task
+            // Select first task
             _tasksViewModel.Tasks.First().IsSelected = true;
 
+            // Edit first task
+            _tasksViewModel.EditTaskCommand.Execute(null);
+            var editedTaskViewModel = _tasksViewModel.NewTaskViewModel;
+
+            Assert.AreEqual(taskViewModel1.Name, editedTaskViewModel.Name);
+            Assert.AreEqual(taskViewModel1.TaskFrequency, editedTaskViewModel.TaskFrequency);
+            Assert.AreEqual(taskViewModel1.Status, editedTaskViewModel.Status);
+            Assert.AreEqual(taskViewModel1.Desk, editedTaskViewModel.Desk);
+            Assert.AreEqual(taskViewModel1.Description, editedTaskViewModel.Description);
+            Assert.AreEqual(taskViewModel1.IntermediateDate, editedTaskViewModel.IntermediateDate);
+            Assert.AreEqual(taskViewModel1.FinalDate, editedTaskViewModel.FinalDate);
+            Assert.AreEqual(taskViewModel1.RelatedTo, editedTaskViewModel.RelatedTo);
+
+            // Remove first task
             _tasksViewModel.RemoveSelectedTasksCommand.Execute(null);
 
             Assert.AreEqual(1, _tasksViewModel.Tasks.Count());
@@ -47,7 +72,7 @@ namespace Task4UTests
         }
 
         [TestMethod]
-        public void ShowNewTaskCommandTest()
+        public void ShowNewTaskAndShowTasksCommandsTest()
         {
             bool isNewTaskVisible = false, isTasksListVisible = true;
 
@@ -63,6 +88,16 @@ namespace Task4UTests
 
             Assert.IsTrue(isNewTaskVisible, "New task is not visible after executing ShowNewTaskCommand");
             Assert.IsFalse(isTasksListVisible, "Tasks list is visible after executing ShowNewTaskCommand");
+
+            _tasksViewModel.ShowTasksCommand.Execute(null);
+
+            Assert.IsFalse(isNewTaskVisible, "New task is not visible after executing ShowNewTaskCommand");
+            Assert.IsTrue(isTasksListVisible, "Tasks list is visible after executing ShowNewTaskCommand");
+        }
+
+        public void EditTaskCommandTest()
+        {
+
         }
 
         private static TasksViewModel CreateTasksViewModel()

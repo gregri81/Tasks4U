@@ -51,6 +51,26 @@ namespace Tasks4U.ViewModels
 
                 return DateOnly.MinValue;
             }
+
+            set
+            {
+                switch (TaskFrequency)
+                {
+                    case Frequency.Once:
+                        DateText = value.ToString();
+                        break;
+                    case Frequency.EveryWeek:
+                        WeekDay = value.DayOfWeek;
+                        break;
+                    case Frequency.EveryMonth:
+                        Day = value.Day;
+                        break;
+                    case Frequency.EveryYear:
+                        Month = (MonthOfYear)value.Month;
+                        DayInMonth = value.Day;
+                        break;
+                }
+            }
         }
         
         private Frequency _taskFrequency = Frequency.Once;

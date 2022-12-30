@@ -128,7 +128,7 @@ namespace Task4UTests
         }
 
         [TestMethod]
-        public void TestTaskDate()
+        public void TestTaskDateGetter()
         {            
             var today = DateOnly.FromDateTime(DateTime.Today);
 
@@ -172,6 +172,35 @@ namespace Task4UTests
                 nextDate = nextDate.AddYears(1);
 
             Assert.AreEqual(nextDate, taskDateViewModel.TaskDate);
+        }
+
+        [TestMethod]
+        public void TestTaskDateSetter()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Today);
+
+            var taskDateViewModel = new TaskDateViewModel();
+
+            // Once
+            taskDateViewModel.TaskFrequency = Frequency.Once;
+            taskDateViewModel.TaskDate = date;
+            Assert.AreEqual(date.ToString(), taskDateViewModel.DateText);
+
+            // Every Week
+            taskDateViewModel.TaskFrequency = Frequency.EveryWeek;
+            taskDateViewModel.TaskDate = date;
+            Assert.AreEqual(date.DayOfWeek, taskDateViewModel.WeekDay);
+
+            // Every Month
+            taskDateViewModel.TaskFrequency = Frequency.EveryMonth;
+            taskDateViewModel.TaskDate = date;
+            Assert.AreEqual(date.Day, taskDateViewModel.Day);
+
+            // Every Year
+            taskDateViewModel.TaskFrequency = Frequency.EveryYear;
+            taskDateViewModel.TaskDate = date;
+            Assert.AreEqual(date.Day, taskDateViewModel.DayInMonth);
+            Assert.AreEqual((MonthOfYear)date.Month, taskDateViewModel.Month);
         }
 
         [TestMethod]

@@ -1,6 +1,7 @@
 ﻿<Application x:Class="Tasks4U.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Tasks4U.Converters"
              xmlns:local="clr-namespace:Tasks4U">
     <Application.Resources>
         <ResourceDictionary>
@@ -8,6 +9,8 @@
                 <ResourceDictionary Source="/Resources/ComboBoxStyle.xaml"/>
                 <ResourceDictionary Source="/Resources/DataGridStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:SplitByCapitalLettersConverter x:Key="SplitByCapitalLettersConverter"/>
 
             <BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
 

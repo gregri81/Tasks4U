@@ -1,10 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Tasks4U.Models;
@@ -15,6 +13,7 @@ namespace Tasks4U.ViewModels
     public class TasksViewModel : ObservableObject
     {
         private readonly TasksContext _tasksContext;
+        private Task? _editedTask;
 
         public TasksViewModel(TasksContext tasksContext)
         {
@@ -22,26 +21,39 @@ namespace Tasks4U.ViewModels
             _tasksContext = tasksContext;
             tasksContext.Tasks.Load();
 
-            RemoveSelectedTasksCommand = new RelayCommand(RemoveSelectedTasks);
+            RemoveSelectedTasksCommand = new RelayCommand(RemoveSelectedTasks, () => Tasks != null && Tasks.Any(t => t.IsSelected));
             
             ShowNewTaskCommand = new RelayCommand(ShowNewTask);
-            
+
+            EditTaskCommand = new RelayCommand(EditTask, () => Tasks != null && Tasks.Where(t => t.IsSelected).Take(2).Count() == 1);
+
+            ShowTasksCommand = new RelayCommand(ShowTasksListWithoutSaving);
+
             AddTaskCommand = new RelayCommand(AddTask, () => NewTaskViewModel.IsValid());
             
             NewTaskViewModel.IsValidChanged += () => AddTaskCommand.NotifyCanExecuteChanged();
             
             SaveCommand = new RelayCommand(Save, () => IsModifiedSinceLastSave);
-            
+
+            HandleWindowClosingCommand = new RelayCommand(HandleWindowClosing);
+
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
-            Tasks.CollectionChanged += (e, s) => IsModifiedSinceLastSave = true;
+
+            RegisterCallbackHandlersForTasksCollection();
         }
 
         #region properties
 
-        public ICommand RemoveSelectedTasksCommand { get; }
+        public RelayCommand RemoveSelectedTasksCommand { get; }
         public ICommand ShowNewTaskCommand { get; }
+
+        public RelayCommand EditTaskCommand { get; }
+
+        public ICommand ShowTasksCommand { get; }
         public RelayCommand AddTaskCommand { get; }
         public RelayCommand SaveCommand { get; }
+
+        public ICommand HandleWindowClosingCommand { get; }
 
         public ObservableCollection<Task> Tasks { get; }
 
@@ -81,6 +93,32 @@ namespace Tasks4U.ViewModels
         #endregion
 
         #region methods
+        private void RegisterCallbackHandlersForTasksCollection()
+        {
+            var OnIsSelectedChanged = () =>
+            {
+                RemoveSelectedTasksCommand.NotifyCanExecuteChanged();
+                EditTaskCommand.NotifyCanExecuteChanged();
+            };
+
+            foreach (Task task in Tasks)
+                task.IsSelectedChanged += OnIsSelectedChanged;
+
+            Tasks.CollectionChanged += (e, s) =>
+            {
+                IsModifiedSinceLastSave = true;
+
+                RemoveSelectedTasksCommand.NotifyCanExecuteChanged();
+                EditTaskCommand.NotifyCanExecuteChanged();
+
+                if (s.NewItems != null)
+                {
+                    foreach (Task task in s.NewItems)
+                        task.IsSelectedChanged += OnIsSelectedChanged;
+                }
+            };
+        }
+
         private void AddTask()
         {
             var task = new Task(NewTaskViewModel.Name)
@@ -90,10 +128,17 @@ namespace Tasks4U.ViewModels
                 RelatedTo = NewTaskViewModel.RelatedTo,
                 Desk = NewTaskViewModel.Desk,
                 IntermediateDate = NewTaskViewModel.IntermediateDate,
-                FinalDate = NewTaskViewModel.FinalDate
+                FinalDate = NewTaskViewModel.FinalDate,
+                Status = NewTaskViewModel.Status
             };
 
             _tasksContext.Tasks.Add(task);
+
+            if (_editedTask != null)
+            {
+                _tasksContext.Remove(_editedTask);
+                _editedTask = null;
+            }
 
             ShowTasksList();
         }
@@ -113,10 +158,51 @@ namespace Tasks4U.ViewModels
             IsTasksListVisible = false;
         }
 
+        private void EditTask()
+        {
+            _editedTask = Tasks.Single(t => t.IsSelected);
+
+            NewTaskViewModel.Clear();
+
+            NewTaskViewModel.Name = _editedTask.Name;
+            NewTaskViewModel.Description = _editedTask.Description;            
+            NewTaskViewModel.RelatedTo = _editedTask.RelatedTo;
+            NewTaskViewModel.Desk = _editedTask.Desk;
+            NewTaskViewModel.TaskFrequency = _editedTask.TaskFrequency;
+            NewTaskViewModel.IntermediateDate = _editedTask.IntermediateDate;
+            NewTaskViewModel.FinalDate = _editedTask.FinalDate;
+            NewTaskViewModel.Status = _editedTask.Status;
+
+            NewTaskViewModel.TaskFrequency = _editedTask.TaskFrequency;
+
+            IsNewTaskVisible = true;
+            IsTasksListVisible = false;
+        }
+
+        private void ShowTasksListWithoutSaving()
+        {
+
+            if (MessageBox.Show("Are you sure that you want to cancel?", "Any changes will be unsaved",
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                ShowTasksList();
+            }
+        }
+
         private void ShowTasksList()
         {
             IsNewTaskVisible = false;
             IsTasksListVisible = true;
+        }
+
+        private void HandleWindowClosing()
+        {
+            if (IsModifiedSinceLastSave &&
+                MessageBox.Show("Do you want to save your changes", "There are unsaved changes",
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                Save();
+            }
         }
 
         private void Save()
@@ -134,7 +220,7 @@ namespace Tasks4U.ViewModels
             IsModifiedSinceLastSave = false;
         }
 
-        private void ShowSubjectNotUniqueMessageBox(DbUpdateException exception)
+        private static void ShowSubjectNotUniqueMessageBox(DbUpdateException exception)
         {
             var message = "You cannot use the same subject twice.";
 

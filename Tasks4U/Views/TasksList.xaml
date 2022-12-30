@@ -11,7 +11,7 @@
     <DataGrid ItemsSource="{Binding Tasks}" CanUserAddRows="False" VerticalAlignment="Top" BorderThickness="1 1 1 0" IsReadOnly="True">
         <DataGrid.Resources>
             <converters:FirstLineConverter x:Key="FirstLineConverter"/>
-            <converters:DateOnlyConverter x:Key="DateOnlyConverter"/>
+            <converters:DateAndFrequencyConverter x:Key="DateAndFrequencyConverter"/>
             <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}"/>
         </DataGrid.Resources>
         <DataGrid.Columns>
@@ -22,7 +22,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+            <DataGridTextColumn Header="Subject" Binding="{Binding Name}" Width="*"/>
             
             <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource FirstLineConverter}}" Width="2*">
                 <DataGridTextColumn.CellStyle>
@@ -35,14 +35,28 @@
             <DataGridTextColumn Header="Related To" Binding="{Binding RelatedTo}" Width="2*"/>
             
             <DataGridTextColumn Header="Desk" Binding="{Binding Desk}" Width="*"/>
-            
-            <DataGridTextColumn Header="Task Frequency" Binding="{Binding TaskFrequency}" Width="*"/>
-            
-            <DataGridTextColumn Header="Intermediate Date" 
-                                Binding="{Binding IntermediateDate, Converter={StaticResource DateOnlyConverter}}" 
-                                Width="*"/>
-            
-            <DataGridTextColumn Header="Final Date" Binding="{Binding FinalDate}" Width="*"/>
+
+            <DataGridTextColumn Header="Task Frequency" Binding="{Binding TaskFrequency, Converter={StaticResource SplitByCapitalLettersConverter}}" Width="*"/>
+
+            <DataGridTextColumn Header="Intermediate Date" Width="*">
+                <DataGridTextColumn.Binding>
+                    <MultiBinding Converter="{StaticResource DateAndFrequencyConverter}">
+                        <Binding Path="IntermediateDate"/>
+                        <Binding Path="TaskFrequency"/>
+                    </MultiBinding>
+                </DataGridTextColumn.Binding>
+            </DataGridTextColumn>
+
+            <DataGridTextColumn Header="Final Date" Width="*">
+                <DataGridTextColumn.Binding>
+                    <MultiBinding Converter="{StaticResource DateAndFrequencyConverter}">
+                        <Binding Path="FinalDate"/>
+                        <Binding Path="TaskFrequency"/>
+                    </MultiBinding>
+                </DataGridTextColumn.Binding>
+            </DataGridTextColumn>
+
+            <DataGridTextColumn Header="Status" Binding="{Binding Status, Converter={StaticResource SplitByCapitalLettersConverter}}" Width="*"/>
             
         </DataGrid.Columns>
     </DataGrid>
