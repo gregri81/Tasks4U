@@ -94,6 +94,16 @@ namespace Task4UTests
             Assert.IsFalse(taskViewModel.IsValid());
             taskViewModel.FinalDateViewModel.DateText = tomorrow.ToString();
             Assert.IsTrue(taskViewModel.IsValid());
+
+            // Assert that when we disable validation, it's disabled for both intermediate-date and final-date
+            taskViewModel.DisableDateValidation(true);
+            Assert.IsTrue(taskViewModel.IntermediateDateViewModel.IsDateValidationDisabled);
+            Assert.IsTrue(taskViewModel.FinalDateViewModel.IsDateValidationDisabled);
+
+            // Assert that when we enable validation, it's disabled for both intermediate-date and final-date
+            taskViewModel.DisableDateValidation(false);
+            Assert.IsFalse(taskViewModel.IntermediateDateViewModel.IsDateValidationDisabled);
+            Assert.IsFalse(taskViewModel.FinalDateViewModel.IsDateValidationDisabled);
         }
 
         private void TaskViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

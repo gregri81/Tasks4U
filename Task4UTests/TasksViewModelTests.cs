@@ -1,4 +1,6 @@
-﻿using Tasks4U.Models;
+﻿using System.Windows;
+using Tasks4U.Models;
+using Tasks4U.Services;
 using Tasks4U.ViewModels;
 using Task = Tasks4U.Models.Task;
 using TaskStatus = Tasks4U.Models.TaskStatus;
@@ -95,15 +97,18 @@ namespace Task4UTests
             Assert.IsTrue(isTasksListVisible, "Tasks list is visible after executing ShowNewTaskCommand");
         }
 
-        public void EditTaskCommandTest()
+        class MockMessageBoxService : IMessageBoxService
         {
-
+            public MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
+            {
+                return MessageBoxResult.Yes;
+            }
         }
 
         private static TasksViewModel CreateTasksViewModel()
         {
             var tasksContext = new TasksContext("Data Source=test.db");
-            return new TasksViewModel(tasksContext);
+            return new TasksViewModel(tasksContext, new MockMessageBoxService());
         }
     }
 }

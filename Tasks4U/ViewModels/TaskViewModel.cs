@@ -48,17 +48,13 @@ namespace Tasks4U.ViewModels
             FinalDateViewModel.ErrorsChanged += (s, e) => IsValidChanged?.Invoke();
         }
 
-        public void Clear()
-        {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            IntermediateDateViewModel.DateText = today.ToString();
-            FinalDateViewModel.DateText = today.AddDays(1).ToString();
-            Name = string.Empty;
-            Description = string.Empty;
-            TaskFrequency = Frequency.Once;
-        }
+        #region properties
 
-        public bool IsValid() => !HasErrors && !IntermediateDateViewModel.HasErrors && !FinalDateViewModel.HasErrors;
+        public static Array FrequencyValues => Enum.GetValues(typeof(Frequency));
+
+        public static Array StatusValues => Enum.GetValues(typeof(TaskStatus));
+
+        public static Array DeskValues => Enum.GetValues(typeof(Desk));        
 
         public TaskDateViewModel IntermediateDateViewModel { get; }
             
@@ -148,10 +144,28 @@ namespace Tasks4U.ViewModels
             set => FinalDateViewModel.TaskDate = value;
         }
 
-        public static Array FrequencyValues => Enum.GetValues(typeof(Frequency));
+        #endregion
 
-        public static Array StatusValues => Enum.GetValues(typeof(TaskStatus));
+        #region methods
 
-        public static Array DeskValues => Enum.GetValues(typeof(Desk));
+        public void Clear()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            IntermediateDateViewModel.DateText = today.ToString();
+            FinalDateViewModel.DateText = today.AddDays(1).ToString();
+            Name = string.Empty;
+            Description = string.Empty;
+            TaskFrequency = Frequency.Once;
+        }
+
+        public bool IsValid() => !HasErrors && !IntermediateDateViewModel.HasErrors && !FinalDateViewModel.HasErrors;
+
+        public void DisableDateValidation(bool value)
+        {
+            IntermediateDateViewModel.IsDateValidationDisabled = value;
+            FinalDateViewModel.IsDateValidationDisabled = value;
+        }
+
+        #endregion
     }
 }

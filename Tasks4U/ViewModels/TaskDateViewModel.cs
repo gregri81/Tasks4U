@@ -146,6 +146,8 @@ namespace Tasks4U.ViewModels
             set => SetProperty(ref _dayInMonth, value);
         }
 
+        public bool IsDateValidationDisabled { get; set; }
+
         // Options for comboxes
         public IEnumerable<DayOfWeek> WeekDays { get; } = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>();
         public IEnumerable<int> Days1To28 { get; } = Enumerable.Range(1, 28);
@@ -157,13 +159,16 @@ namespace Tasks4U.ViewModels
 
         public static ValidationResult? ValidateDateText(string dateText, ValidationContext context)
         {
+            var taskDateViewModel = (TaskDateViewModel)context.ObjectInstance;
+
+            if (taskDateViewModel.IsDateValidationDisabled)
+                return null;
+
             if (!DateOnly.TryParseExact(dateText, _dateFormat, out DateOnly date))
                 return new ValidationResult("Date is not in valid format");
 
             if (date.ToDateTime(TimeOnly.MinValue) < DateTime.Today)
                 return new ValidationResult("Date in the past? You need a flux capacitor.");
-
-            var taskDateViewModel = (TaskDateViewModel)context.ObjectInstance;
 
             if (taskDateViewModel.TaskFrequency == Frequency.Once && 
                 taskDateViewModel._nonRecurringDateValidation != null)

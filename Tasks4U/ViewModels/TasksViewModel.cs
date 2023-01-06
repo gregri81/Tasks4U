@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Tasks4U.Models;
+using Tasks4U.Services;
 using Task = Tasks4U.Models.Task;
 
 namespace Tasks4U.ViewModels
@@ -13,10 +14,13 @@ namespace Tasks4U.ViewModels
     public class TasksViewModel : ObservableObject
     {
         private readonly TasksContext _tasksContext;
+        private readonly IMessageBoxService _messageBoxService;
         private Task? _editedTask;
 
-        public TasksViewModel(TasksContext tasksContext)
+        public TasksViewModel(TasksContext tasksContext, IMessageBoxService messageBoxService)
         {
+            _messageBoxService = messageBoxService;
+
             tasksContext.Database.EnsureCreated();
             _tasksContext = tasksContext;
             tasksContext.Tasks.Load();
@@ -168,12 +172,13 @@ namespace Tasks4U.ViewModels
             NewTaskViewModel.Description = _editedTask.Description;            
             NewTaskViewModel.RelatedTo = _editedTask.RelatedTo;
             NewTaskViewModel.Desk = _editedTask.Desk;
+            NewTaskViewModel.Status = _editedTask.Status;
+
+            NewTaskViewModel.DisableDateValidation(true);
             NewTaskViewModel.TaskFrequency = _editedTask.TaskFrequency;
             NewTaskViewModel.IntermediateDate = _editedTask.IntermediateDate;
             NewTaskViewModel.FinalDate = _editedTask.FinalDate;
-            NewTaskViewModel.Status = _editedTask.Status;
-
-            NewTaskViewModel.TaskFrequency = _editedTask.TaskFrequency;
+            NewTaskViewModel.DisableDateValidation(false);
 
             IsNewTaskVisible = true;
             IsTasksListVisible = false;
@@ -182,8 +187,8 @@ namespace Tasks4U.ViewModels
         private void ShowTasksListWithoutSaving()
         {
 
-            if (MessageBox.Show("Are you sure that you want to cancel?", "Any changes will be unsaved",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            if (_messageBoxService.Show("Are you sure that you want to cancel?", "Any changes will be unsaved",
+                                        MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 ShowTasksList();
             }
@@ -198,7 +203,7 @@ namespace Tasks4U.ViewModels
         private void HandleWindowClosing()
         {
             if (IsModifiedSinceLastSave &&
-                MessageBox.Show("Do you want to save your changes", "There are unsaved changes",
+                _messageBoxService.Show("Do you want to save your changes", "There are unsaved changes",
                                 MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 Save();
@@ -220,14 +225,14 @@ namespace Tasks4U.ViewModels
             IsModifiedSinceLastSave = false;
         }
 
-        private static void ShowSubjectNotUniqueMessageBox(DbUpdateException exception)
+        private void ShowSubjectNotUniqueMessageBox(DbUpdateException exception)
         {
             var message = "You cannot use the same subject twice.";
 
             if (exception.Entries.Count > 0 && exception.Entries[0].Entity is Task task)
                 message += " Subject: " + task.Name;
 
-            MessageBox.Show(message, "Subject must be unique", MessageBoxButton.OK, MessageBoxImage.Warning);
+            _messageBoxService.Show(message, "Subject must be unique", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         
         #endregion

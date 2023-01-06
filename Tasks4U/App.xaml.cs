@@ -23,7 +23,7 @@ namespace Tasks4U
 
             new MainWindow()
             {
-                DataContext = new TasksViewModel(tasksContext)
+                DataContext = new TasksViewModel(tasksContext, new Services.MessageBoxService())
             }.Show();
         }
     }

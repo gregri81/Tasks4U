@@ -221,6 +221,15 @@ namespace Task4UTests
             validationResult = ValidateDateText(tomorrow.ToString(), new ValidationContext(taskDateViewModel));
             Assert.IsNull(validationResult);
 
+            // Make sure that this validation is not performed when validation is disabled
+            taskDateViewModel.IsDateValidationDisabled = true;
+            validationResult = ValidateDateText(today.ToString(), new ValidationContext(taskDateViewModel));
+            Assert.IsNull(validationResult);
+
+            // Make sure that this validation is performed when validation is enabled again
+            taskDateViewModel.IsDateValidationDisabled = false;
+            validationResult = ValidateDateText(today.ToString(), new ValidationContext(taskDateViewModel));
+            Assert.AreEqual("today", validationResult?.ErrorMessage);
 
             // Make sure that this validation is not performed when frequency is not 'once'
             taskDateViewModel.TaskFrequency = Frequency.EveryWeek;
