@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Tasks4U.Models;
@@ -42,11 +43,11 @@ namespace Tasks4U.ViewModels
             HandleWindowClosingCommand = new RelayCommand(HandleWindowClosing);
 
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
-
+            
             RegisterCallbackHandlersForTasksCollection();
         }
 
-        #region properties
+        #region commands
 
         public RelayCommand RemoveSelectedTasksCommand { get; }
         public ICommand ShowNewTaskCommand { get; }
@@ -58,6 +59,12 @@ namespace Tasks4U.ViewModels
         public RelayCommand SaveCommand { get; }
 
         public ICommand HandleWindowClosingCommand { get; }
+
+        #endregion
+
+        #region properties
+
+        public FilterViewModel Filter { get; } = new FilterViewModel();
 
         public ObservableCollection<Task> Tasks { get; }
 

@@ -77,6 +77,8 @@
             
         </ToolBar>
 
+        <views:Filter DockPanel.Dock="Top" DataContext="{Binding Filter}"/>
+        
         <Grid>
             <views:TasksList Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
             <views:NewTask                         

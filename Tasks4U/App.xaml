@@ -33,7 +33,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
+            
             <Style x:Key="TabItemTextBlockStyle" TargetType="TextBlock">
                 <Setter Property="FontWeight" Value="Bold"/>
             </Style>
