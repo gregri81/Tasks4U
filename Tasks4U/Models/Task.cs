@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -12,7 +14,7 @@ namespace Tasks4U.Models
 
     public enum Frequency { Once, EveryWeek, EveryMonth, EveryYear };
 
-    public class Task
+    public class Task: ObservableObject
     {
         public Task(string name) => Name = name;
 
@@ -27,7 +29,7 @@ namespace Tasks4U.Models
         public DateOnly FinalDate { get; set; }
         public TaskStatus Status { get; set; }
 
-        // Yes, it's not MVVM to store IsSelected property in the model.
+        // Yes, it's not MVVM to store IsSelected and IsFilteredOut properties in the model.
         // But sometimes rules just have to be broken in order to simplify the code...
         private bool _isSelected;
         [NotMapped]
@@ -37,10 +39,22 @@ namespace Tasks4U.Models
             set
             {
                 _isSelected = value;
-                IsSelectedChanged?.Invoke();
+                IsUnmappedRowPropertyChanged?.Invoke();
             }
         }
 
-        public event Action? IsSelectedChanged;
+        private bool _isFilteredOut;
+        [NotMapped]
+        public bool IsFilteredOut
+        {
+            get => _isFilteredOut;
+            set
+            {
+                SetProperty(ref _isFilteredOut, value);
+                IsUnmappedRowPropertyChanged?.Invoke();                
+            }
+        }
+
+        public event Action? IsUnmappedRowPropertyChanged;
     }
 }

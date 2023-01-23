@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -43,8 +44,16 @@ namespace Tasks4U.ViewModels
             HandleWindowClosingCommand = new RelayCommand(HandleWindowClosing);
 
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
-            
+                        
             RegisterCallbackHandlersForTasksCollection();
+
+            Filter.IsFilterChanged += () => 
+            {
+                foreach (Task task in Tasks)
+                {
+                    task.IsFilteredOut = !Filter.IsTaskFilteredIn(task);
+                }
+            };
         }
 
         #region commands
@@ -113,7 +122,7 @@ namespace Tasks4U.ViewModels
             };
 
             foreach (Task task in Tasks)
-                task.IsSelectedChanged += OnIsSelectedChanged;
+                task.IsUnmappedRowPropertyChanged += OnIsSelectedChanged;
 
             Tasks.CollectionChanged += (e, s) =>
             {
@@ -125,7 +134,7 @@ namespace Tasks4U.ViewModels
                 if (s.NewItems != null)
                 {
                     foreach (Task task in s.NewItems)
-                        task.IsSelectedChanged += OnIsSelectedChanged;
+                        task.IsUnmappedRowPropertyChanged += OnIsSelectedChanged;
                 }
             };
         }
@@ -166,7 +175,7 @@ namespace Tasks4U.ViewModels
         {
             NewTaskViewModel.Clear();
             IsNewTaskVisible = true;
-            IsTasksListVisible = false;
+            IsTasksListVisible = false;            
         }
 
         private void EditTask()
@@ -205,6 +214,7 @@ namespace Tasks4U.ViewModels
         {
             IsNewTaskVisible = false;
             IsTasksListVisible = true;
+            Filter.SelectedFilter = FilterViewModel.FilterType.None;
         }
 
         private void HandleWindowClosing()

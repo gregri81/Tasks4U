@@ -9,7 +9,7 @@ namespace Tasks4U.ViewModels
 {
     public class TaskDateViewModel : ObservableValidator
     {
-        private const string _dateFormat = "dd/MM/yyyy";
+        public const string DateFormat = "dd/MM/yyyy";
 
         private Func<DateOnly, string>? _nonRecurringDateValidation;
 
@@ -30,7 +30,7 @@ namespace Tasks4U.ViewModels
             {
                 if (TaskFrequency == Frequency.Once)
                 {
-                    return  DateOnly.TryParseExact(_dateText, _dateFormat, out DateOnly date) 
+                    return  DateOnly.TryParseExact(_dateText, DateFormat, out DateOnly date) 
                             ? date 
                             : DateOnly.MinValue;
                 }
@@ -164,7 +164,7 @@ namespace Tasks4U.ViewModels
             if (taskDateViewModel.IsDateValidationDisabled)
                 return null;
 
-            if (!DateOnly.TryParseExact(dateText, _dateFormat, out DateOnly date))
+            if (!DateOnly.TryParseExact(dateText, DateFormat, out DateOnly date))
                 return new ValidationResult("Date is not in valid format");
 
             if (date.ToDateTime(TimeOnly.MinValue) < DateTime.Today)

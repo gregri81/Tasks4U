@@ -4,13 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Tasks4U.Views"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             FontSize="15">
+             FontSize="15"
+             Validation.ErrorTemplate="{x:Null}">
     <DockPanel>
         <DockPanel.Resources>
             <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                 <Setter Property="Height" Value="25"/>
+
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource SplitByCapitalLettersConverter}}"/>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
         </DockPanel.Resources>
         <TextBlock Margin="5" DockPanel.Dock="Left">Filter By:</TextBlock>
@@ -26,13 +36,17 @@
 
         <!-- For Date filter -->
         <StackPanel Orientation="Horizontal" Visibility="{Binding IsDateFilter,Converter={StaticResource BoolToVisibilityConverter}}">
-            <ComboBox ItemsSource="{Binding FrequencyValues}" SelectedValue="{Binding TaskFrequency}"/>
-            <local:TaskDate DataContext="{Binding FromDateViewModel}"/>
-            <local:TaskDate DataContext="{Binding ToDateViewModel}"/>
+
+            <DatePicker Text="{Binding StartDateText,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+
+            <DatePicker Text="{Binding EndDateText,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                        DisplayDateStart="{Binding StartDate,Mode=OneWay}"/>
         </StackPanel>
 
-        <!-- For Subject, RelatedTo and Description filters-->
-        <TextBox Height="25" Margin="5 0" Visibility="{Binding IsTextFilter,Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <!-- For Text filter-->
+        <TextBox Height="25" Margin="5 0" 
+                 Visibility="{Binding IsTextFilter,Converter={StaticResource BoolToVisibilityConverter}}"                 
+                 Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"/>
         
     </DockPanel>
 </UserControl>

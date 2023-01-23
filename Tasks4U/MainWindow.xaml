@@ -14,7 +14,7 @@
             <i:InvokeCommandAction Command="{Binding HandleWindowClosingCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    
+
     <DockPanel>
         <DockPanel.Resources>
             <Style TargetType="Image" BasedOn="{StaticResource ToolbarButtonImageStyle}"/>
@@ -38,7 +38,7 @@
                     <TextBlock>Edit</TextBlock>
                 </StackPanel>
             </Button>
-            
+
             <!-- Remove button - for removing an existing task-->
             <Button Command="{Binding RemoveSelectedTasksCommand}"
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
@@ -74,11 +74,14 @@
                     <TextBlock>Done</TextBlock>
                 </StackPanel>
             </Button>
-            
+
         </ToolBar>
 
-        <views:Filter DockPanel.Dock="Top" DataContext="{Binding Filter}"/>
-        
+        <ContentControl DockPanel.Dock="Top" Margin="0 0 0 20"
+                        Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+            <views:Filter DataContext="{Binding Filter}"/>
+        </ContentControl>
+
         <Grid>
             <views:TasksList Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
             <views:NewTask                         
