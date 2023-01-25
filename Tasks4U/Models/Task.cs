@@ -56,5 +56,7 @@ namespace Tasks4U.Models
         }
 
         public event Action? IsUnmappedRowPropertyChanged;
+        public bool CorrespondsToIntermediateDate(DateOnly currentDate) => 
+        private bool CorrespondsToDate(DateOnly taskDate, DateOnly currentDate)
     }
 }
