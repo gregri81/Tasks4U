@@ -56,7 +56,28 @@ namespace Tasks4U.Models
         }
 
         public event Action? IsUnmappedRowPropertyChanged;
+
         public bool CorrespondsToIntermediateDate(DateOnly currentDate) => 
+            CorrespondsToDate(IntermediateDate, currentDate);
+
+        public bool CorrespondsToFinalDate(DateOnly currentDate) =>
+            CorrespondsToDate(FinalDate, currentDate);
+
         private bool CorrespondsToDate(DateOnly taskDate, DateOnly currentDate)
+        {
+            switch(TaskFrequency)
+            {
+                case Frequency.Once:
+                    return taskDate == currentDate;
+                case Frequency.EveryWeek:
+                    return taskDate.DayOfWeek == currentDate.DayOfWeek;
+                case Frequency.EveryMonth:
+                    return taskDate.Day == currentDate.Day;
+                case Frequency.EveryYear:
+                    return taskDate.Month == currentDate.Month && taskDate.Day == currentDate.Day;
+                default: 
+                    return false;
+            }
+        }
     }
 }

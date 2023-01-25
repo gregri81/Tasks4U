@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+	<UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Images\tasks.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -25,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Images\tasks.ico" />
+    <Resource Include="Images\tasks.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +51,7 @@
     <Resource Include="Images\edit.png" />
     <Resource Include="Images\minus.png" />
     <Resource Include="Images\plus.png" />
-    <Resource Include="Images\save.png" />
+    <Content Include="Images\save.png" />
   </ItemGroup>
 
 </Project>
