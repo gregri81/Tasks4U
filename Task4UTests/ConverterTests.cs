@@ -58,7 +58,7 @@ namespace Task4UTests
             var splitByCapitalLettersConverter = new SplitByCapitalLettersConverter();
 
             var convert = (object value) => 
-                splitByCapitalLettersConverter.Convert(value, typeof(string), null, CultureInfo.InvariantCulture);
+                splitByCapitalLettersConverter.Convert(value, typeof(string), "", CultureInfo.InvariantCulture);
 
             Assert.AreEqual(convert(Frequency.Once), "Once");
             Assert.AreEqual(convert(Frequency.EveryWeek), "Every Week");

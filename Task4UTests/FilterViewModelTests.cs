@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tasks4U.ViewModels;
+﻿using Tasks4U.ViewModels;
 using Task = Tasks4U.Models.Task;
 using Tasks4U.Models;
 using TaskStatus = Tasks4U.Models.TaskStatus;

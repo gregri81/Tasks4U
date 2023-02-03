@@ -2,9 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Tasks4U.Models;
@@ -28,26 +26,26 @@ namespace Tasks4U.ViewModels
             tasksContext.Tasks.Load();
 
             RemoveSelectedTasksCommand = new RelayCommand(RemoveSelectedTasks, () => Tasks != null && Tasks.Any(t => t.IsSelected));
-            
+
             ShowNewTaskCommand = new RelayCommand(ShowNewTask);
 
-            EditTaskCommand = new RelayCommand(EditTask, () => Tasks != null && Tasks.Where(t => t.IsSelected).Take(2).Count() == 1);
+            EditSelectedTaskCommand = new RelayCommand(EditSelectedTask, () => Tasks != null && Tasks.Where(t => t.IsSelected).Take(2).Count() == 1);
 
             ShowTasksCommand = new RelayCommand(ShowTasksListWithoutSaving);
 
             AddTaskCommand = new RelayCommand(AddTask, () => NewTaskViewModel.IsValid());
-            
+
             NewTaskViewModel.IsValidChanged += () => AddTaskCommand.NotifyCanExecuteChanged();
-            
+
             SaveCommand = new RelayCommand(Save, () => IsModifiedSinceLastSave);
 
             HandleWindowClosingCommand = new RelayCommand(HandleWindowClosing);
 
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
-                        
+
             RegisterCallbackHandlersForTasksCollection();
 
-            Filter.IsFilterChanged += () => 
+            Filter.IsFilterChanged += () =>
             {
                 foreach (Task task in Tasks)
                 {
@@ -61,7 +59,7 @@ namespace Tasks4U.ViewModels
         public RelayCommand RemoveSelectedTasksCommand { get; }
         public ICommand ShowNewTaskCommand { get; }
 
-        public RelayCommand EditTaskCommand { get; }
+        public RelayCommand EditSelectedTaskCommand { get; }
 
         public ICommand ShowTasksCommand { get; }
         public RelayCommand AddTaskCommand { get; }
@@ -113,12 +111,20 @@ namespace Tasks4U.ViewModels
         #endregion
 
         #region methods
+        public void EditSpecifiedTask(int taskId)
+        {
+            var task = Tasks.FirstOrDefault(t => t.ID == taskId);
+
+            if (task != null)
+                EditTask(task);
+        }
+
         private void RegisterCallbackHandlersForTasksCollection()
         {
             var OnIsSelectedChanged = () =>
             {
                 RemoveSelectedTasksCommand.NotifyCanExecuteChanged();
-                EditTaskCommand.NotifyCanExecuteChanged();
+                EditSelectedTaskCommand.NotifyCanExecuteChanged();
             };
 
             foreach (Task task in Tasks)
@@ -129,7 +135,7 @@ namespace Tasks4U.ViewModels
                 IsModifiedSinceLastSave = true;
 
                 RemoveSelectedTasksCommand.NotifyCanExecuteChanged();
-                EditTaskCommand.NotifyCanExecuteChanged();
+                EditSelectedTaskCommand.NotifyCanExecuteChanged();
 
                 if (s.NewItems != null)
                 {
@@ -175,17 +181,19 @@ namespace Tasks4U.ViewModels
         {
             NewTaskViewModel.Clear();
             IsNewTaskVisible = true;
-            IsTasksListVisible = false;            
+            IsTasksListVisible = false;
         }
 
-        private void EditTask()
+        private void EditSelectedTask() => EditTask(Tasks.Single(t => t.IsSelected));
+
+        private void EditTask(Task task)
         {
-            _editedTask = Tasks.Single(t => t.IsSelected);
+            _editedTask = task;
 
             NewTaskViewModel.Clear();
 
             NewTaskViewModel.Name = _editedTask.Name;
-            NewTaskViewModel.Description = _editedTask.Description;            
+            NewTaskViewModel.Description = _editedTask.Description;
             NewTaskViewModel.RelatedTo = _editedTask.RelatedTo;
             NewTaskViewModel.Desk = _editedTask.Desk;
             NewTaskViewModel.Status = _editedTask.Status;
@@ -233,10 +241,12 @@ namespace Tasks4U.ViewModels
             {
                 _tasksContext.SaveChanges();
             }
-            catch(DbUpdateException exception) when (exception.InnerException != null)
+            catch (DbUpdateException exception) when (exception.InnerException != null)
             {
                 if (exception.InnerException.Message.EndsWith("'UNIQUE constraint failed: Tasks.Name'."))
                     ShowSubjectNotUniqueMessageBox(exception);
+                else
+                    _messageBoxService.Show(exception.InnerException.Message, "Failed to save", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             IsModifiedSinceLastSave = false;
@@ -251,7 +261,7 @@ namespace Tasks4U.ViewModels
 
             _messageBoxService.Show(message, "Subject must be unique", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
-        
+
         #endregion
     }
 }

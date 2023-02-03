@@ -1,11 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tasks4U.Models
 {
@@ -14,7 +9,7 @@ namespace Tasks4U.Models
 
     public enum Frequency { Once, EveryWeek, EveryMonth, EveryYear };
 
-    public class Task: ObservableObject
+    public class Task : ObservableObject
     {
         public Task(string name) => Name = name;
 
@@ -28,6 +23,12 @@ namespace Tasks4U.Models
         public DateOnly IntermediateDate { get; set; }
         public DateOnly FinalDate { get; set; }
         public TaskStatus Status { get; set; }
+
+        [NotMapped]
+        public DateOnly LastIntermediateNotificationDate { get; set; }
+
+        [NotMapped]
+        public DateOnly LastFinalNotificationDate { get; set; }
 
         // Yes, it's not MVVM to store IsSelected and IsFilteredOut properties in the model.
         // But sometimes rules just have to be broken in order to simplify the code...
@@ -51,21 +52,27 @@ namespace Tasks4U.Models
             set
             {
                 SetProperty(ref _isFilteredOut, value);
-                IsUnmappedRowPropertyChanged?.Invoke();                
+                IsUnmappedRowPropertyChanged?.Invoke();
             }
         }
 
         public event Action? IsUnmappedRowPropertyChanged;
 
-        public bool CorrespondsToIntermediateDate(DateOnly currentDate) => 
-            CorrespondsToDate(IntermediateDate, currentDate);
+        public bool ShouldShowIntermediateNotification(DateOnly currentDate) =>
+            IntermediateDate > DateOnly.MinValue &&
+            CorrespondsToDate(IntermediateDate, currentDate, LastIntermediateNotificationDate);
 
-        public bool CorrespondsToFinalDate(DateOnly currentDate) =>
-            CorrespondsToDate(FinalDate, currentDate);
+        public bool ShouldShowFinalNotification(DateOnly currentDate) =>
+            CorrespondsToDate(FinalDate, currentDate, LastFinalNotificationDate);
 
-        private bool CorrespondsToDate(DateOnly taskDate, DateOnly currentDate)
+        private bool CorrespondsToDate(DateOnly taskDate,
+                                        DateOnly currentDate,
+                                        DateOnly lastNotificationDate)
         {
-            switch(TaskFrequency)
+            if (currentDate <= lastNotificationDate)
+                return false;
+
+            switch (TaskFrequency)
             {
                 case Frequency.Once:
                     return taskDate == currentDate;
@@ -75,7 +82,7 @@ namespace Tasks4U.Models
                     return taskDate.Day == currentDate.Day;
                 case Frequency.EveryYear:
                     return taskDate.Month == currentDate.Month && taskDate.Day == currentDate.Day;
-                default: 
+                default:
                     return false;
             }
         }

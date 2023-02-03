@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Tasks4U.Services
 {
@@ -12,7 +7,7 @@ namespace Tasks4U.Services
         public MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon);
     }
 
-    public class MessageBoxService: IMessageBoxService
+    public class MessageBoxService : IMessageBoxService
     {
         public MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
         {

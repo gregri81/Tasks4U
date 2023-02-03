@@ -1,13 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using Tasks4U.Models;
 
 
@@ -18,7 +11,7 @@ namespace Tasks4U.ViewModels
     public class TaskViewModel : ObservableValidator
     {
         public event Action? IsValidChanged;
-        
+
         public TaskViewModel()
         {
             // Set name explicitly in order to cause validation
@@ -29,7 +22,7 @@ namespace Tasks4U.ViewModels
                 ? "Must be earlier than final date"
                 : string.Empty;
 
-            IntermediateDateViewModel = new TaskDateViewModel(intermediateDateValidator);            
+            IntermediateDateViewModel = new TaskDateViewModel(intermediateDateValidator);
 
             FinalDateViewModel.PropertyChanged += (s, e) =>
             {
@@ -54,15 +47,15 @@ namespace Tasks4U.ViewModels
 
         public static Array StatusValues => Enum.GetValues(typeof(TaskStatus));
 
-        public static Array DeskValues => Enum.GetValues(typeof(Desk));        
+        public static Array DeskValues => Enum.GetValues(typeof(Desk));
 
         public TaskDateViewModel IntermediateDateViewModel { get; }
-            
+
         public TaskDateViewModel FinalDateViewModel { get; } = new TaskDateViewModel();
 
         private string _name;
         [Required(ErrorMessage = "Subject is required")]
-        public string Name 
+        public string Name
         {
             get => _name;
             set => SetProperty(ref _name, value, true);
@@ -83,11 +76,11 @@ namespace Tasks4U.ViewModels
         }
 
         private Frequency _taskFrequency = Frequency.Once;
-        public Frequency TaskFrequency 
+        public Frequency TaskFrequency
         {
             get => _taskFrequency;
             set
-            {                
+            {
                 SetProperty(ref _taskFrequency, value);
                 IntermediateDateViewModel.TaskFrequency = value;
                 FinalDateViewModel.TaskFrequency = value;
@@ -101,7 +94,7 @@ namespace Tasks4U.ViewModels
             get => _status;
             set => SetProperty(ref _status, value);
         }
-        
+
         private Desk _desk = Desk.General;
         public Desk Desk
         {

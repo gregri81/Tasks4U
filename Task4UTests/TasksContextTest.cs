@@ -1,4 +1,3 @@
-using Tasks4U.ViewModels;
 using Tasks4U.Models;
 using Task = Tasks4U.Models.Task;
 

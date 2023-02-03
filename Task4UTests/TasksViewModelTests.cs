@@ -2,7 +2,6 @@
 using Tasks4U.Models;
 using Tasks4U.Services;
 using Tasks4U.ViewModels;
-using Task = Tasks4U.Models.Task;
 using TaskStatus = Tasks4U.Models.TaskStatus;
 
 namespace Task4UTests
@@ -54,7 +53,7 @@ namespace Task4UTests
             _tasksViewModel.Tasks.First().IsSelected = true;
 
             // Edit first task
-            _tasksViewModel.EditTaskCommand.Execute(null);
+            _tasksViewModel.EditSelectedTaskCommand.Execute(null);
             var editedTaskViewModel = _tasksViewModel.NewTaskViewModel;
 
             Assert.AreEqual(taskViewModel1.Name, editedTaskViewModel.Name);

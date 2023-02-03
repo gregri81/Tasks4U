@@ -31,7 +31,7 @@
             </Button>
 
             <!-- Edit button - shows the NewTask UserControl with parameters filled in from the selected task-->
-            <Button Command="{Binding EditTaskCommand}" 
+            <Button Command="{Binding EditSelectedTaskCommand}" 
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel>
                     <Image Source="/Images/edit.png"/>
