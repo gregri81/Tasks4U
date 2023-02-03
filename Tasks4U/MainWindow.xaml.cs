@@ -16,7 +16,7 @@ namespace Tasks4U
         {
             InitializeComponent();
 
-            //Loaded += (s, e) => DisableCloseButton();
+            Loaded += (s, e) => DisableCloseButton();
 
             DataContextChanged += (s, e) =>
             {

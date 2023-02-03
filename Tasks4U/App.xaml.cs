@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.IO;
+using System.Windows;
 using Tasks4U.Models;
 using Tasks4U.Services;
 using Tasks4U.ViewModels;
@@ -14,7 +16,9 @@ namespace Tasks4U
         {
             base.OnStartup(e);
 
-            var tasksContext = new TasksContext("Data Source=tasks.db");
+            var dataSource = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tasks.db");
+
+            var tasksContext = new TasksContext("Data Source=" + dataSource);
 
             var notificationService = new NotificationService(tasksContext);
 
