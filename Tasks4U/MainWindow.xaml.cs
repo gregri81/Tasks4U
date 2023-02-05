@@ -21,8 +21,27 @@ namespace Tasks4U
             DataContextChanged += (s, e) =>
             {
                 var tasksViewModel = (TasksViewModel)DataContext;
-                notificationService.NotificationClick += taskId => tasksViewModel.EditSpecifiedTask(taskId);
-            };           
+
+                notificationService.NotificationClick += taskId =>
+                {
+                    tasksViewModel.EditSpecifiedTask(taskId);
+                    ShowTheWindow();
+                };
+            };            
+        }
+        
+        public void ShowTheWindow()
+        {
+            if (WindowState == WindowState.Minimized || Visibility != Visibility.Visible)
+            {
+                Show();
+                WindowState = WindowState.Normal;
+            }
+
+            Activate();
+            Topmost = true;
+            Topmost = false;
+            Focus();
         }
 
         private void DisableCloseButton()

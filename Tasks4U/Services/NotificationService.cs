@@ -51,10 +51,7 @@ namespace Tasks4U.Services
             notificationIcon.BalloonTipClicked += (s, e) =>
             {
                 notificationIcon.Dispose();
-
                 NotificationClick?.Invoke(task.ID);
-                System.Windows.Application.Current.MainWindow.WindowState = System.Windows.WindowState.Normal;
-                System.Windows.Application.Current.MainWindow.Activate();
             };
 
             notificationIcon.BalloonTipClosed += (s, e) => notificationIcon.Dispose();
