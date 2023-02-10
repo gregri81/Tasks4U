@@ -8,12 +8,23 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Padding="3">
-    <DataGrid ItemsSource="{Binding Tasks}" CanUserAddRows="False" VerticalAlignment="Top" BorderThickness="1 1 1 0" IsReadOnly="True">
+    <DataGrid ItemsSource="{Binding Tasks}" 
+              IsReadOnly="True"
+              IsSynchronizedWithCurrentItem="True"
+              CanUserAddRows="False"
+              VerticalAlignment="Top" BorderThickness="1 1 1 0">
         <DataGrid.Resources>
             <converters:FirstLineConverter x:Key="FirstLineConverter"/>
             <converters:DateAndFrequencyConverter x:Key="DateAndFrequencyConverter"/>
             <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}"/>
         </DataGrid.Resources>
+
+        <DataGrid.InputBindings>
+            <MouseBinding MouseAction="LeftDoubleClick"
+                          Command="{Binding EditTaskCommand}" 
+                          CommandParameter="{Binding Tasks/}"/>
+        </DataGrid.InputBindings>
+        
         <DataGrid.RowStyle>
             <Style TargetType="{x:Type DataGridRow}">
                 <Style.Triggers>
@@ -23,6 +34,7 @@
                 </Style.Triggers>
             </Style>
         </DataGrid.RowStyle>
+        
         <DataGrid.Columns>
             <DataGridTemplateColumn>
                 <DataGridTemplateColumn.CellTemplate>
@@ -31,6 +43,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
+
             <DataGridTextColumn Header="Subject" Binding="{Binding Name}" Width="*"/>
             
             <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource FirstLineConverter}}" Width="2*">

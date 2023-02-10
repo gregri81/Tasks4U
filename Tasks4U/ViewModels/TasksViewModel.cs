@@ -31,6 +31,8 @@ namespace Tasks4U.ViewModels
 
             EditSelectedTaskCommand = new RelayCommand(EditSelectedTask, () => Tasks != null && Tasks.Where(t => t.IsSelected).Take(2).Count() == 1);
 
+            EditTaskCommand = new RelayCommand<Task?>(task => EditTask(task));
+
             ShowTasksCommand = new RelayCommand(ShowTasksListWithoutSaving);
 
             AddTaskCommand = new RelayCommand(AddTask, () => NewTaskViewModel.IsValid());
@@ -60,6 +62,7 @@ namespace Tasks4U.ViewModels
         public ICommand ShowNewTaskCommand { get; }
 
         public RelayCommand EditSelectedTaskCommand { get; }
+        public RelayCommand<Task?> EditTaskCommand { get; }
 
         public ICommand ShowTasksCommand { get; }
         public RelayCommand AddTaskCommand { get; }
@@ -184,10 +187,13 @@ namespace Tasks4U.ViewModels
             IsTasksListVisible = false;
         }
 
-        private void EditSelectedTask() => EditTask(Tasks.Single(t => t.IsSelected));
+        private void EditSelectedTask() => EditTask(Tasks.SingleOrDefault(t => t.IsSelected));
 
-        private void EditTask(Task task)
+        private void EditTask(Task? task)
         {
+            if (task == null)
+                return;
+
             _editedTask = task;
 
             NewTaskViewModel.Clear();
