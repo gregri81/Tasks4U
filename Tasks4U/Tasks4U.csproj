@@ -7,6 +7,7 @@
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Images\tasks.ico</ApplicationIcon>
+	<VersionPrefix>1.0.0.7</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -53,5 +54,5 @@
     <Resource Include="Images\plus.png" />
     <Resource Include="Images\save.png" />
   </ItemGroup>
-
+	
 </Project>

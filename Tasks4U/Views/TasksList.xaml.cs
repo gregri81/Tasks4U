@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Tasks4U.Models;
+using Tasks4U.ViewModels;
 
 namespace Tasks4U.Views
 {
@@ -23,6 +15,35 @@ namespace Tasks4U.Views
         public TasksList()
         {
             InitializeComponent();
+
+            DataContextChanged += (s, e) =>
+            {
+                var tasksViewModel = (TasksViewModel)DataContext;
+                var tasks = tasksViewModel.Tasks;
+                var filter = tasksViewModel.Filter;
+
+                var view = CollectionViewSource.GetDefaultView(tasks);
+                
+                view.SortDescriptions.Add(new SortDescription("FinalDate", ListSortDirection.Descending));
+
+                view.Filter = task => filter.IsTaskFilteredIn((Task)task);
+
+                filter.IsFilterChanged += () => view.Refresh();
+            };
+        }
+
+        private void TasksDataGridCell_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not DataGridCell cell)
+                return;
+
+            // Ignore click on the checkbox column - this is handled seperately
+            if (cell.Column.DisplayIndex == 0)
+                return;
+
+            var row = DataGridRow.GetRowContainingElement(cell);
+
+            ((TasksViewModel)DataContext).EditTaskCommand.Execute(row.DataContext);
         }
     }
 }

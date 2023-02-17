@@ -46,14 +46,6 @@ namespace Tasks4U.ViewModels
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
 
             RegisterCallbackHandlersForTasksCollection();
-
-            Filter.IsFilterChanged += () =>
-            {
-                foreach (Task task in Tasks)
-                {
-                    task.IsFilteredOut = !Filter.IsTaskFilteredIn(task);
-                }
-            };
         }
 
         #region commands
@@ -76,7 +68,7 @@ namespace Tasks4U.ViewModels
 
         public FilterViewModel Filter { get; } = new FilterViewModel();
 
-        public ObservableCollection<Task> Tasks { get; }
+        public ObservableCollection<Task> Tasks { get; }       
 
         private bool _isNewTaskVisible = false;
         public bool IsNewTaskVisible
@@ -216,7 +208,6 @@ namespace Tasks4U.ViewModels
 
         private void ShowTasksListWithoutSaving()
         {
-
             if (_messageBoxService.Show("Are you sure that you want to cancel?", "Any changes will be unsaved",
                                         MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
@@ -226,6 +217,7 @@ namespace Tasks4U.ViewModels
 
         private void ShowTasksList()
         {
+            _editedTask = null;
             IsNewTaskVisible = false;
             IsTasksListVisible = true;
             Filter.SelectedFilter = FilterViewModel.FilterType.None;
@@ -234,7 +226,7 @@ namespace Tasks4U.ViewModels
         private void HandleWindowClosing()
         {
             if (IsModifiedSinceLastSave &&
-                _messageBoxService.Show("Do you want to save your changes", "There are unsaved changes",
+                _messageBoxService.Show("Do you want to save your changes?", "There are unsaved changes",
                                 MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 Save();

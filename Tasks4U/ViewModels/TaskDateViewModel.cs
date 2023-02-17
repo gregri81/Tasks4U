@@ -165,10 +165,7 @@ namespace Tasks4U.ViewModels
                 return null;
 
             if (!DateOnly.TryParseExact(dateText, DateFormat, out DateOnly date))
-                return new ValidationResult("Date is not in valid format");
-
-            if (date.ToDateTime(TimeOnly.MinValue) < DateTime.Today)
-                return new ValidationResult("Date in the past? You need a flux capacitor.");
+                return new ValidationResult("Date is not in valid format");            
 
             if (taskDateViewModel.TaskFrequency == Frequency.Once && 
                 taskDateViewModel._nonRecurringDateValidation != null)

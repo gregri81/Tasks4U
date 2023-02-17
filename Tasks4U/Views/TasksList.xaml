@@ -4,36 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:Tasks4U.Converters"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Padding="3">
-    <DataGrid ItemsSource="{Binding Tasks}" 
+
+    <DataGrid ItemsSource="{Binding Tasks}"
               IsReadOnly="True"
-              IsSynchronizedWithCurrentItem="True"
               CanUserAddRows="False"
-              VerticalAlignment="Top" BorderThickness="1 1 1 0">
+              VerticalAlignment="Top" 
+              BorderThickness="1 1 1 0">
         <DataGrid.Resources>
             <converters:FirstLineConverter x:Key="FirstLineConverter"/>
             <converters:DateAndFrequencyConverter x:Key="DateAndFrequencyConverter"/>
-            <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}"/>
-        </DataGrid.Resources>
-
-        <DataGrid.InputBindings>
-            <MouseBinding MouseAction="LeftDoubleClick"
-                          Command="{Binding EditTaskCommand}" 
-                          CommandParameter="{Binding Tasks/}"/>
-        </DataGrid.InputBindings>
-        
-        <DataGrid.RowStyle>
-            <Style TargetType="{x:Type DataGridRow}">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsFilteredOut}" Value="True">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                    </DataTrigger>
-                </Style.Triggers>
+            <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}">
+                <EventSetter Event="PreviewMouseDown" Handler="TasksDataGridCell_PreviewMouseDown"/>
             </Style>
-        </DataGrid.RowStyle>
+        </DataGrid.Resources>
         
         <DataGrid.Columns>
             <DataGridTemplateColumn>
@@ -44,11 +31,17 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
 
-            <DataGridTextColumn Header="Subject" Binding="{Binding Name}" Width="*"/>
+            <DataGridTextColumn Header="Subject" Binding="{Binding Name}" Width="*">
+                <DataGridTextColumn.CellStyle>
+                    <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                        <Setter Property="ToolTip" Value="{Binding Name}"/>
+                    </Style>
+                </DataGridTextColumn.CellStyle>
+            </DataGridTextColumn>
             
             <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource FirstLineConverter}}" Width="2*">
                 <DataGridTextColumn.CellStyle>
-                    <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}">
+                    <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
                         <Setter Property="ToolTip" Value="{Binding Description}"/>
                     </Style>
                 </DataGridTextColumn.CellStyle>

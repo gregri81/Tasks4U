@@ -239,10 +239,6 @@ namespace Task4UTests
             // Assert validation when date format is not correct
             validationResult = ValidateDateText(today.ToString() + "a", new ValidationContext(taskDateViewModel));
             Assert.AreEqual("Date is not in valid format", validationResult?.ErrorMessage);
-
-            // Assert validtation when date is in the past
-            validationResult = ValidateDateText(yesterday.ToString(), new ValidationContext(taskDateViewModel));
-            Assert.AreEqual("Date in the past? You need a flux capacitor.", validationResult?.ErrorMessage);
         }
     }
 }

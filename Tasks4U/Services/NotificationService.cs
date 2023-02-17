@@ -37,7 +37,6 @@ namespace Tasks4U.Services
             var iconStream = System.Windows.Application.GetResourceStream(iconUri).Stream;
 
             notificationIcon.Icon = new Icon(iconStream);
-            notificationIcon.Icon = SystemIcons.Asterisk;
             notificationIcon.Visible = true;
 
             string taskFrequencyDescription = task.TaskFrequency switch
@@ -57,7 +56,7 @@ namespace Tasks4U.Services
             notificationIcon.BalloonTipClosed += (s, e) => notificationIcon.Dispose();
 
             notificationIcon.ShowBalloonTip(
-                5000, task.Name + taskFrequencyDescription, text, ToolTipIcon.Error);            
+                5000, task.Name + taskFrequencyDescription, text, ToolTipIcon.Warning);            
         }
 
 

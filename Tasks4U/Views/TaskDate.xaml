@@ -11,8 +11,7 @@
     <Grid>
         <!-- When frequency is Once -->
         <DatePicker Visibility="{Binding IsOnceFrequency,Converter={StaticResource BoolToVisibilityConverter}}"
-                    Text="{Binding DateText,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                    DisplayDateStart="{Binding Mode=OneWay, Source={x:Static System:DateTime.Today}}"/>
+                    Text="{Binding DateText,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
 
         <!-- When frequency is Every Week -->
         <ComboBox 

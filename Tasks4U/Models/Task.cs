@@ -44,18 +44,6 @@ namespace Tasks4U.Models
             }
         }
 
-        private bool _isFilteredOut;
-        [NotMapped]
-        public bool IsFilteredOut
-        {
-            get => _isFilteredOut;
-            set
-            {
-                SetProperty(ref _isFilteredOut, value);
-                IsUnmappedRowPropertyChanged?.Invoke();
-            }
-        }
-
         public event Action? IsUnmappedRowPropertyChanged;
 
         public bool ShouldShowIntermediateNotification(DateOnly currentDate) =>

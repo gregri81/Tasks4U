@@ -85,7 +85,7 @@ namespace Task4UTests
         public void FilterTest()
         {
             var filterViewModel = new FilterViewModel();
-
+            
             var today = DateOnly.FromDateTime(DateTime.Today);
             var yesterday = today.AddDays(-1);
             var twoDaysAgo = today.AddDays(-2);
@@ -98,50 +98,52 @@ namespace Task4UTests
                 new Task("task2") { RelatedTo = "...text...", Status = TaskStatus.InProgress, FinalDate = twoDaysAgo},
                 new Task("task3") { Description = "...", Name = "...", RelatedTo = "...", IntermediateDate = today}
             };
-            
+
+            bool[] isFilteredOut = new bool[tasks.Length];
+                
             filterViewModel.IsFilterChanged += () =>
             {
-                foreach (var task in tasks)
-                    task.IsFilteredOut = !filterViewModel.IsTaskFilteredIn(task);
+                for (var i = 0; i < tasks.Length; i++)
+                    isFilteredOut[i] = !filterViewModel.IsTaskFilteredIn(tasks[i]);
             };
 
             // Text filter
             filterViewModel.SelectedFilter = FilterViewModel.FilterType.Text;
             filterViewModel.Text = "text";
 
-            Assert.IsFalse(tasks[0].IsFilteredOut);
-            Assert.IsFalse(tasks[1].IsFilteredOut);
-            Assert.IsFalse(tasks[2].IsFilteredOut);
-            Assert.IsTrue(tasks[3].IsFilteredOut);
+            Assert.IsFalse(isFilteredOut[0]);
+            Assert.IsFalse(isFilteredOut[1]);
+            Assert.IsFalse(isFilteredOut[2]);
+            Assert.IsTrue(isFilteredOut[3]);
 
             // Desk filter
             filterViewModel.SelectedFilter = FilterViewModel.FilterType.Desk;
             filterViewModel.Desk = Desk.Canada;
 
-            Assert.IsFalse(tasks[0].IsFilteredOut);
-            Assert.IsTrue(tasks[1].IsFilteredOut);
-            Assert.IsTrue(tasks[2].IsFilteredOut);
-            Assert.IsTrue(tasks[3].IsFilteredOut);
+            Assert.IsFalse(isFilteredOut[0]);
+            Assert.IsTrue(isFilteredOut[1]);
+            Assert.IsTrue(isFilteredOut[2]);
+            Assert.IsTrue(isFilteredOut[3]);
 
 
             // Status filter
             filterViewModel.SelectedFilter = FilterViewModel.FilterType.Status;
             filterViewModel.Status = TaskStatus.InProgress;
 
-            Assert.IsTrue(tasks[0].IsFilteredOut);
-            Assert.IsFalse(tasks[1].IsFilteredOut);
-            Assert.IsFalse(tasks[2].IsFilteredOut);
-            Assert.IsTrue(tasks[3].IsFilteredOut);
+            Assert.IsTrue(isFilteredOut[0]);
+            Assert.IsFalse(isFilteredOut[1]);
+            Assert.IsFalse(isFilteredOut[2]);
+            Assert.IsTrue(isFilteredOut[3]);
 
             // Date filter
             filterViewModel.SelectedFilter = FilterViewModel.FilterType.Date;
             filterViewModel.StartDateText = yesterday.ToString(TaskDateViewModel.DateFormat);
             filterViewModel.EndDateText = today.ToString(TaskDateViewModel.DateFormat);
 
-            Assert.IsFalse(tasks[0].IsFilteredOut);
-            Assert.IsTrue(tasks[1].IsFilteredOut);
-            Assert.IsTrue(tasks[2].IsFilteredOut);
-            Assert.IsFalse(tasks[3].IsFilteredOut);
+            Assert.IsFalse(isFilteredOut[0]);
+            Assert.IsTrue(isFilteredOut[1]);
+            Assert.IsTrue(isFilteredOut[2]);
+            Assert.IsFalse(isFilteredOut[3]);
         }
     }
 }
