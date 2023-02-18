@@ -16,6 +16,6 @@ There is a timer that checks which tasks are due today (either according to the 
 
 # Technology Stack
 - As stated above, I used WPF.
-- I used CommunityToolkit.Mvvm to adhere to the MVVM pattern. In some places, I broke to rules of MVVM to simplify the rules - I am not a purist.
+- I used CommunityToolkit.Mvvm to adhere to the MVVM pattern. In some places, I broke the rules of MVVM to simplify the code - I am not a purist.
 - I used an Sqlite database to store the tasks. I think that in a desktop application without a server, Sqlite is a good fit.
 - I used EF Core 6 for database access.
