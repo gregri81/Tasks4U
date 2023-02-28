@@ -48,15 +48,6 @@
                 </StackPanel>
             </Button>
 
-            <!-- Save button - the user should click on it when she wants to save changes. -->
-            <Button Command="{Binding SaveCommand}"
-                                    Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                <StackPanel ToolTip="Save Everything (Tasks and Desks)">
-                    <Image Source="/Images/save.png"/>
-                    <TextBlock Text="Save"/>
-                </StackPanel>
-            </Button>
-
             <!-- Cancel button - the user should click on it when she's done with the new task parameters-->
             <Button Command="{Binding ShowTasksCommand}"
                     Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">

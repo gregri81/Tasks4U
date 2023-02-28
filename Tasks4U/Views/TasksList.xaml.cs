@@ -1,7 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Tasks4U.Models;
 using Tasks4U.ViewModels;
 
@@ -10,26 +16,31 @@ namespace Tasks4U.Views
     /// <summary>
     /// Interaction logic for TasksList.xaml
     /// </summary>
-    public partial class TasksList : UserControl
+    public partial class TasksList : System.Windows.Controls.UserControl
     {
+        private TasksViewModel? _tasksViewModel;        
+
         public TasksList()
         {
             InitializeComponent();
 
             DataContextChanged += (s, e) =>
             {
-                var tasksViewModel = (TasksViewModel)DataContext;
-                var tasks = tasksViewModel.Tasks;
-                var filter = tasksViewModel.Filter;
+                _tasksViewModel = (TasksViewModel)DataContext;
+                var tasks = _tasksViewModel.Tasks;
+                var filter = _tasksViewModel.Filter;
 
                 var view = CollectionViewSource.GetDefaultView(tasks);
-                
-                view.SortDescriptions.Add(new SortDescription("FinalDate", ListSortDirection.Descending));
+
+                if (view is ListCollectionView listCollectionView)
+                    listCollectionView.CustomSort = new CustomSorter();
 
                 view.Filter = task => filter.IsTaskFilteredIn((Task)task);
 
                 filter.IsFilterChanged += () => view.Refresh();
-            };
+
+                _tasksViewModel.IsDateChanged += () => view.Refresh();
+            };           
         }
 
         private void TasksDataGridCell_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -44,6 +55,40 @@ namespace Tasks4U.Views
             var row = DataGridRow.GetRowContainingElement(cell);
 
             ((TasksViewModel)DataContext).EditTaskCommand.Execute(row.DataContext);
+        }        
+
+        // This class compares tasks such that finished task are last
+        // and other tasks are sorted by final date
+        private class CustomSorter: IComparer
+        {
+            public int Compare(object? x, object? y)
+            {
+                if (x == null && y == null)
+                    return 0;
+
+                if (x == null)
+                    return 1;
+
+                if (y == null)
+                    return -1;
+
+                var task1 = (Task)x;
+                var task2 = (Task)y;
+                
+                if (task1.Status == TaskStatus.Finished && task2.Status != TaskStatus.Finished)
+                    return 1;
+
+                if (task2.Status == TaskStatus.Finished && task1.Status != TaskStatus.Finished)
+                    return -1;
+
+                if (task1.NextDateOfTask < task2.NextDateOfTask)
+                    return -1;
+
+                if (task1.NextDateOfTask > task2.NextDateOfTask)
+                    return 1;
+
+                return 0;
+            }
         }
     }
 }

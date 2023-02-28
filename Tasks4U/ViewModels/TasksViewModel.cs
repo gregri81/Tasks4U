@@ -1,10 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Tasks4U.Models;
 using Tasks4U.Services;
 using Task = Tasks4U.Models.Task;
@@ -13,11 +18,21 @@ namespace Tasks4U.ViewModels
 {
     public class TasksViewModel : ObservableObject
     {
+        // The customer's request is to start receiving notification at 9 o`clock
+        private readonly TimeSpan _notificationsStartTime = TimeSpan.FromHours(9);
+
+        // The customer's request is to stop receiving notification at 5 o`clock pm
+        private readonly TimeSpan _notificationsEndTime = TimeSpan.FromHours(17);
+
         private readonly TasksContext _tasksContext;
         private readonly IMessageBoxService _messageBoxService;
+        
         private Task? _editedTask;
+        private DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
 
-        public TasksViewModel(TasksContext tasksContext, IMessageBoxService messageBoxService)
+        public TasksViewModel(
+            TasksContext tasksContext, 
+            IMessageBoxService messageBoxService)
         {
             _messageBoxService = messageBoxService;
 
@@ -39,14 +54,18 @@ namespace Tasks4U.ViewModels
 
             NewTaskViewModel.IsValidChanged += () => AddTaskCommand.NotifyCanExecuteChanged();
 
-            SaveCommand = new RelayCommand(Save, () => IsModifiedSinceLastSave);
-
-            HandleWindowClosingCommand = new RelayCommand(HandleWindowClosing);
-
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
 
             RegisterCallbackHandlersForTasksCollection();
+
+            // Start a timer that renews recurring tasks,
+            // shows notifications and sorts the tasks datagrid when the date changes
+            var timer = new DispatcherTimer() { Interval = TimeSpan.FromMinutes(1) };
+            timer.Tick += (s, e) => TimerCallback();
+            timer.Start();
         }
+
+        public event Action? IsDateChanged;
 
         #region commands
 
@@ -58,9 +77,6 @@ namespace Tasks4U.ViewModels
 
         public ICommand ShowTasksCommand { get; }
         public RelayCommand AddTaskCommand { get; }
-        public RelayCommand SaveCommand { get; }
-
-        public ICommand HandleWindowClosingCommand { get; }
 
         #endregion
 
@@ -68,7 +84,7 @@ namespace Tasks4U.ViewModels
 
         public FilterViewModel Filter { get; } = new FilterViewModel();
 
-        public ObservableCollection<Task> Tasks { get; }       
+        public ObservableCollection<Task> Tasks { get; set; }
 
         private bool _isNewTaskVisible = false;
         public bool IsNewTaskVisible
@@ -84,35 +100,11 @@ namespace Tasks4U.ViewModels
             set => SetProperty(ref _isTasksListVisible, value);
         }
 
-        private string _saveButtonText = "Save";
-        public string SaveButtonText
-        {
-            get => _saveButtonText;
-            set => SetProperty(ref _saveButtonText, value);
-        }
-
-        private bool _isModifiedSinceLastSave;
-        private bool IsModifiedSinceLastSave
-        {
-            get => _isModifiedSinceLastSave;
-            set
-            {
-                _isModifiedSinceLastSave = value;
-                SaveCommand.NotifyCanExecuteChanged();
-            }
-        }
         public TaskViewModel NewTaskViewModel { get; set; } = new TaskViewModel();
 
         #endregion
 
-        #region methods
-        public void EditSpecifiedTask(int taskId)
-        {
-            var task = Tasks.FirstOrDefault(t => t.ID == taskId);
-
-            if (task != null)
-                EditTask(task);
-        }
+        #region methods                
 
         private void RegisterCallbackHandlersForTasksCollection()
         {
@@ -127,8 +119,6 @@ namespace Tasks4U.ViewModels
 
             Tasks.CollectionChanged += (e, s) =>
             {
-                IsModifiedSinceLastSave = true;
-
                 RemoveSelectedTasksCommand.NotifyCanExecuteChanged();
                 EditSelectedTaskCommand.NotifyCanExecuteChanged();
 
@@ -156,12 +146,22 @@ namespace Tasks4U.ViewModels
             _tasksContext.Tasks.Add(task);
 
             if (_editedTask != null)
-            {
                 _tasksContext.Remove(_editedTask);
-                _editedTask = null;
+
+            if (Save())
+            {
+                ShowTasksList();
+            }
+            else
+            {
+                // In case of failure, undo the last change
+                _tasksContext.Tasks.Remove(task);
+
+                if (_editedTask != null)
+                    _tasksContext.Add(_editedTask);
             }
 
-            ShowTasksList();
+            _editedTask = null;
         }
 
         private void RemoveSelectedTasks()
@@ -170,6 +170,8 @@ namespace Tasks4U.ViewModels
 
             foreach (var task in tasksToRemove)
                 Tasks.Remove(task);
+
+            Save();
         }
 
         private void ShowNewTask()
@@ -221,19 +223,9 @@ namespace Tasks4U.ViewModels
             IsNewTaskVisible = false;
             IsTasksListVisible = true;
             Filter.SelectedFilter = FilterViewModel.FilterType.None;
-        }
+        }        
 
-        private void HandleWindowClosing()
-        {
-            if (IsModifiedSinceLastSave &&
-                _messageBoxService.Show("Do you want to save your changes?", "There are unsaved changes",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-            {
-                Save();
-            }
-        }
-
-        private void Save()
+        private bool Save()
         {
             try
             {
@@ -242,24 +234,126 @@ namespace Tasks4U.ViewModels
             catch (DbUpdateException exception) when (exception.InnerException != null)
             {
                 if (exception.InnerException.Message.EndsWith("'UNIQUE constraint failed: Tasks.Name'."))
-                    ShowSubjectNotUniqueMessageBox(exception);
+                {
+                    _messageBoxService.Show("You cannot use the same subject twice.", 
+                                            "Subject must be unique", 
+                                            MessageBoxButton.OK, 
+                                            MessageBoxImage.Warning);
+                }
                 else
-                    _messageBoxService.Show(exception.InnerException.Message, "Failed to save", MessageBoxButton.OK, MessageBoxImage.Warning);
+                {
+                    _messageBoxService.Show(exception.InnerException.Message, 
+                                            "Failed to save", 
+                                            MessageBoxButton.OK, 
+                                            MessageBoxImage.Warning);
+                }
+
+                return false;
             }
 
-            IsModifiedSinceLastSave = false;
+            return true;
         }
 
-        private void ShowSubjectNotUniqueMessageBox(DbUpdateException exception)
+        #endregion
+
+        #region methods that are called by timer
+
+        private void TimerCallback()
         {
-            var message = "You cannot use the same subject twice.";
+            RenewRecurringTasks();
 
-            if (exception.Entries.Count > 0 && exception.Entries[0].Entity is Task task)
-                message += " Subject: " + task.Name;
+            var now = DateTime.Now;
+            var today = DateOnly.FromDateTime(now);
 
-            _messageBoxService.Show(message, "Subject must be unique", MessageBoxButton.OK, MessageBoxImage.Warning);
+            // This is needed in order to re-sort the tasks datagrid when the date changes
+            if (today > _currentDate)
+            {
+                _currentDate = today;
+                IsDateChanged?.Invoke();
+            }
+
+            if (now.TimeOfDay < _notificationsStartTime || now.TimeOfDay > _notificationsEndTime)
+                return;
+
+            var intermediateDateCorrespondingTasks =
+                _tasksContext.Tasks.AsEnumerable()
+                                   .Where(task => task.ShouldShowIntermediateNotification(now))
+                                   .ToList();
+
+            var finalDateCorrespondingTasks =
+                _tasksContext.Tasks.AsEnumerable()
+                                   .Where(task => task.ShouldShowFinalNotification(now))
+                                   .ToList();
+
+            foreach (var task in intermediateDateCorrespondingTasks)
+            {
+                ShowNotification(task, "Intermediate date is today");
+                task.LastNotificationTime = now;
+            }
+
+            foreach (var task in finalDateCorrespondingTasks)
+            {
+                var message = task.IsDayOfFinalDate(today)
+                              ? "Final date is today"
+                              : "Final date has passed";
+
+                ShowNotification(task, message);
+                task.LastNotificationTime = now;
+            }
         }
 
+        private void ShowNotification(Task task, string text)
+        {
+            var notificationIcon = new NotifyIcon();
+
+            var iconUri = new Uri("pack://application:,,,/Images/tasks.ico");
+            var iconStream = System.Windows.Application.GetResourceStream(iconUri).Stream;
+
+            notificationIcon.Icon = new Icon(iconStream);
+            notificationIcon.Visible = true;
+
+            string taskFrequencyDescription = task.TaskFrequency switch
+            {
+                Frequency.EveryWeek => " (Weekly)",
+                Frequency.EveryMonth => " (Monthly)",
+                Frequency.EveryYear => " (Yearly)",
+                _ => string.Empty
+            };
+
+            notificationIcon.BalloonTipClicked += (s, e) =>
+            {
+                notificationIcon.Dispose();
+                EditTask(task);
+            };
+
+            notificationIcon.BalloonTipClosed += (s, e) =>
+            {
+                notificationIcon.Dispose();
+            };
+
+            notificationIcon.ShowBalloonTip(
+                5000, task.Name + taskFrequencyDescription, text, ToolTipIcon.Warning);
+        }
+
+        private void RenewRecurringTasks()
+        {
+            var renewedTasks = new List<int>();
+
+            foreach (var task in _tasksContext.Tasks)
+            {
+                if (task.RenewRecurringTaskIfNeeded())
+                    renewedTasks.Add(task.ID);
+            }
+
+            _tasksContext.SaveChanges();
+
+            foreach (var taskId in renewedTasks)
+            {
+                var task = Tasks.FirstOrDefault(t => t.ID == taskId);
+                task?.ClearStatus();
+            }
+        }
+        
         #endregion
     }
 }

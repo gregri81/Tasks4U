@@ -23,14 +23,12 @@ namespace Tasks4U.Models
         public DateOnly IntermediateDate { get; set; }
         public DateOnly FinalDate { get; set; }
         public TaskStatus Status { get; set; }
+        public DateTime LastRenewalTime { get; set; } = DateTime.Now;
 
         [NotMapped]
-        public DateOnly LastIntermediateNotificationDate { get; set; }
+        public DateTime LastNotificationTime { get; set; }
 
-        [NotMapped]
-        public DateOnly LastFinalNotificationDate { get; set; }
-
-        // Yes, it's not MVVM to store IsSelected and IsFilteredOut properties in the model.
+        // Yes, it's not MVVM to store IsSelected property in the model.
         // But sometimes rules just have to be broken in order to simplify the code...
         private bool _isSelected;
         [NotMapped]
@@ -46,33 +44,136 @@ namespace Tasks4U.Models
 
         public event Action? IsUnmappedRowPropertyChanged;
 
-        public bool ShouldShowIntermediateNotification(DateOnly currentDate) =>
-            IntermediateDate > DateOnly.MinValue &&
-            CorrespondsToDate(IntermediateDate, currentDate, LastIntermediateNotificationDate);
-
-        public bool ShouldShowFinalNotification(DateOnly currentDate) =>
-            CorrespondsToDate(FinalDate, currentDate, LastFinalNotificationDate);
-
-        private bool CorrespondsToDate(DateOnly taskDate,
-                                        DateOnly currentDate,
-                                        DateOnly lastNotificationDate)
+        // Clear status and raises a callback.
+        // This is needed when status is clear due to renewal of a recurring task - 
+        // in this case we have to clear in the GUI as well
+        public void ClearStatus()
         {
-            if (currentDate <= lastNotificationDate)
+            Status = TaskStatus.NotStarted;
+            OnPropertyChanged(nameof(Status));
+        }
+
+        public bool RenewRecurringTaskIfNeeded()
+        {
+            if (LastRenewalTime < LastDateOfReccuringTask.ToDateTime(TimeOnly.MinValue))
+            {
+                LastRenewalTime = DateTime.Now;
+                Status = TaskStatus.NotStarted;
+                return true;
+            }
+
+            return false;
+        }
+
+        // For recurring tasks its different than FinalDate (because FinalDate doesn't change)
+        public DateOnly NextDateOfTask
+        {
+            get
+            {
+                if (TaskFrequency == Frequency.Once)
+                    return FinalDate;
+
+                var today = DateOnly.FromDateTime(DateTime.Today);
+                var date = today;
+
+                switch (TaskFrequency)
+                {
+                    case Frequency.EveryWeek:
+                        while (date.DayOfWeek != FinalDate.DayOfWeek)
+                            date = date.AddDays(1);
+
+                    break;
+
+                    case Frequency.EveryMonth:
+                        date = new DateOnly(date.Year, date.Month, FinalDate.Day);
+
+                        if (date < today)
+                            date = date.AddMonths(1);
+
+                        break;
+
+                    case Frequency.EveryYear:
+                        date = new DateOnly(today.Year, FinalDate.Month, FinalDate.Day);
+
+                        if (date < today)
+                            date = date.AddYears(1);
+
+                        break;
+                }
+
+                return date;
+            }
+        }
+
+        public bool IsDayOfFinalDate(DateOnly date)
+        {
+            return TaskFrequency switch
+            {
+                Frequency.Once => date == FinalDate,
+                Frequency.EveryWeek => date.DayOfWeek == FinalDate.DayOfWeek,
+                Frequency.EveryMonth => date.Day == FinalDate.Day,
+                Frequency.EveryYear => date.Month == FinalDate.Month && date.Day == FinalDate.Day,
+                _ => false
+            };
+        }
+
+        private DateOnly LastDateOfReccuringTask
+        {
+            get
+            {
+                var nextDateOfTask = NextDateOfTask;
+
+                if (nextDateOfTask == DateOnly.FromDateTime(DateTime.Today))
+                    return nextDateOfTask;
+
+                switch (TaskFrequency)
+                {
+                    case Frequency.EveryWeek:
+                        return nextDateOfTask.AddDays(-7);
+
+                    case Frequency.EveryMonth:
+                        return nextDateOfTask.AddMonths(-1);
+
+                    case Frequency.EveryYear:
+                        return nextDateOfTask.AddYears(-1);
+
+                    default:
+                        return DateOnly.MinValue;
+                }
+            }
+        }      
+
+        public bool ShouldShowIntermediateNotification(DateTime currentTime)
+        {
+            if (IntermediateDate == DateOnly.MinValue)
                 return false;
 
-            switch (TaskFrequency)
+            if (Status == TaskStatus.Finished)
+                return false;
+
+            if (currentTime - LastNotificationTime <= TimeSpan.FromHours(1))
+                return false;
+
+            return TaskFrequency switch
             {
-                case Frequency.Once:
-                    return taskDate == currentDate;
-                case Frequency.EveryWeek:
-                    return taskDate.DayOfWeek == currentDate.DayOfWeek;
-                case Frequency.EveryMonth:
-                    return taskDate.Day == currentDate.Day;
-                case Frequency.EveryYear:
-                    return taskDate.Month == currentDate.Month && taskDate.Day == currentDate.Day;
-                default:
-                    return false;
-            }
+                Frequency.Once => IntermediateDate == DateOnly.FromDateTime(currentTime),
+                Frequency.EveryWeek => IntermediateDate.DayOfWeek == currentTime.DayOfWeek,
+                Frequency.EveryMonth => IntermediateDate.Day == currentTime.Day,
+                Frequency.EveryYear => IntermediateDate.Month == currentTime.Month &&
+                                        IntermediateDate.Day == currentTime.Day,
+                _ => false
+            };
+        }
+
+        public bool ShouldShowFinalNotification(DateTime currentTime)
+        {
+            if (Status == TaskStatus.Finished)
+                return false;
+
+            if (currentTime - LastNotificationTime <= TimeSpan.FromHours(1))
+                return false;
+
+            return DateOnly.FromDateTime(currentTime) >= FinalDate;
         }
     }
 }

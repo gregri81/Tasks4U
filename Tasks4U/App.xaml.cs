@@ -7,7 +7,7 @@ using Tasks4U.ViewModels;
 using Tasks4U.Models;
 
 namespace Tasks4U
-{   
+{
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -19,21 +19,18 @@ namespace Tasks4U
         public App() => SingleInstanceWatcher();
 
         protected override void OnStartup(StartupEventArgs e)
-        {            
+        {
             base.OnStartup(e);
 
             var dataSource = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tasks.db");
 
             var tasksContext = new TasksContext("Data Source=" + dataSource);
 
-            var notificationService = new NotificationService(tasksContext);
-
-            new MainWindow(notificationService)
+            new MainWindow()
             {
-                DataContext = new TasksViewModel(tasksContext, new MessageBoxService())
-            }.Show();
-
-            notificationService.Start();
+                DataContext = new TasksViewModel(tasksContext,
+                                                 new MessageBoxService())
+            }.Show();            
         }
 
         // If an instance of this application already exits, this code shows the existing instance. Otherwise, it runs a new instance.

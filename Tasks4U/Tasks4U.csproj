@@ -54,5 +54,9 @@
     <Resource Include="Images\plus.png" />
     <Resource Include="Images\save.png" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
 	
 </Project>

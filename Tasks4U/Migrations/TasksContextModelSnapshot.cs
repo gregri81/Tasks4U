@@ -36,6 +36,9 @@ namespace Tasks4U.Migrations
                     b.Property<DateOnly>("IntermediateDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("LastRenewalTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");

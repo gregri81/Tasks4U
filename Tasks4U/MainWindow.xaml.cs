@@ -12,22 +12,12 @@ namespace Tasks4U
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(NotificationService notificationService)
+        public MainWindow()
         {
             InitializeComponent();
 
             Loaded += (s, e) => DisableCloseButton();
-
-            DataContextChanged += (s, e) =>
-            {
-                var tasksViewModel = (TasksViewModel)DataContext;
-
-                notificationService.NotificationClick += taskId =>
-                {
-                    tasksViewModel.EditSpecifiedTask(taskId);
-                    ShowTheWindow();
-                };
-            };            
+           
         }
         
         public void ShowTheWindow()

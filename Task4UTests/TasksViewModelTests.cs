@@ -107,6 +107,7 @@ namespace Task4UTests
         private static TasksViewModel CreateTasksViewModel()
         {
             var tasksContext = new TasksContext("Data Source=test.db");
+            
             return new TasksViewModel(tasksContext, new MockMessageBoxService());
         }
     }
