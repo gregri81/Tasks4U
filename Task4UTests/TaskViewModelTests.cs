@@ -1,5 +1,6 @@
 ﻿using Tasks4U.Models;
 using Tasks4U.ViewModels;
+using TaskStatus = Tasks4U.Models.TaskStatus;
 
 namespace Task4UTests
 {
@@ -62,6 +63,9 @@ namespace Task4UTests
             Assert.AreEqual(string.Empty, taskViewModel.Name);
             Assert.AreEqual(string.Empty, taskViewModel.Description);
             Assert.AreEqual(Frequency.Once, taskViewModel.TaskFrequency);
+            Assert.AreEqual(relatedTo, taskViewModel.RelatedTo);
+            Assert.AreEqual(TaskStatus.NotStarted, taskViewModel.Status);
+            Assert.AreEqual(Desk.General, taskViewModel.Desk);
         }
 
         [TestMethod]

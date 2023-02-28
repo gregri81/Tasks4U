@@ -6,8 +6,6 @@ using Tasks4U.Models;
 
 namespace Tasks4U.ViewModels
 {
-    using TaskStatus = Models.TaskStatus;
-
     public class TaskViewModel : ObservableValidator
     {
         public event Action? IsValidChanged;
@@ -149,6 +147,9 @@ namespace Tasks4U.ViewModels
             Name = string.Empty;
             Description = string.Empty;
             TaskFrequency = Frequency.Once;
+            RelatedTo = string.Empty;
+            Desk = Desk.General;
+            Status = TaskStatus.NotStarted;
         }
 
         public bool IsValid() => !HasErrors && !IntermediateDateViewModel.HasErrors && !FinalDateViewModel.HasErrors;
@@ -159,6 +160,30 @@ namespace Tasks4U.ViewModels
             FinalDateViewModel.IsDateValidationDisabled = value;
         }
 
+        public Memento CreateMemento()
+        {
+            return new Memento(
+                            Name,
+                            Description,
+                            RelatedTo,
+                            TaskFrequency,
+                            Status,
+                            Desk,
+                            IsIntermediateDateEnabled,
+                            IntermediateDate,
+                            FinalDate);
+        }
+
         #endregion
+
+        public record Memento(string Name, 
+                              string Description, 
+                              string RelatedTo, 
+                              Frequency TaskFrequency, 
+                              TaskStatus Status, 
+                              Desk Desk, 
+                              bool IsIntermediateDateEnabled, 
+                              DateOnly IntermediateDate, 
+                              DateOnly FinalDate);
     }
 }

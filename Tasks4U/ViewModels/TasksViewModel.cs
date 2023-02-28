@@ -28,6 +28,7 @@ namespace Tasks4U.ViewModels
         private readonly IMessageBoxService _messageBoxService;
         
         private Task? _editedTask;
+        private TaskViewModel.Memento? _taskMementoBeforeEditing;
         private DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
 
         public TasksViewModel(
@@ -162,6 +163,7 @@ namespace Tasks4U.ViewModels
             }
 
             _editedTask = null;
+            _taskMementoBeforeEditing = null;
         }
 
         private void RemoveSelectedTasks()
@@ -204,14 +206,20 @@ namespace Tasks4U.ViewModels
             NewTaskViewModel.FinalDate = _editedTask.FinalDate;
             NewTaskViewModel.DisableDateValidation(false);
 
+            _taskMementoBeforeEditing = NewTaskViewModel.CreateMemento();
+
             IsNewTaskVisible = true;
             IsTasksListVisible = false;
         }
 
         private void ShowTasksListWithoutSaving()
         {
-            if (_messageBoxService.Show("Are you sure that you want to cancel?", "Any changes will be unsaved",
-                                        MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            if (_taskMementoBeforeEditing == NewTaskViewModel.CreateMemento())
+            {
+                ShowTasksList();
+            }
+            else if (_messageBoxService.Show("Are you sure that you want to cancel?", "Any changes will be unsaved",
+                                             MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 ShowTasksList();
             }
@@ -220,9 +228,9 @@ namespace Tasks4U.ViewModels
         private void ShowTasksList()
         {
             _editedTask = null;
+            _taskMementoBeforeEditing = null;
             IsNewTaskVisible = false;
             IsTasksListVisible = true;
-            Filter.SelectedFilter = FilterViewModel.FilterType.None;
         }        
 
         private bool Save()
