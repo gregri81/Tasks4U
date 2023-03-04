@@ -8,7 +8,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" 
              FontSize="15" Padding="10 10 15 20">
-    <Grid HorizontalAlignment="Stretch" 
+    <Grid x:Name="Grid" 
+          HorizontalAlignment="Stretch" 
           DataContext="{Binding NewTaskViewModel}" 
           Validation.ErrorTemplate="{x:Null}">
         <Grid.ColumnDefinitions>
@@ -123,7 +124,7 @@
         
         <DockPanel Grid.Column="2" Grid.Row="2" Grid.RowSpan="6" Grid.ColumnSpan="5">
             <Label>Description:</Label>
-            <TextBox AcceptsReturn="True" Text="{Binding Description,UpdateSourceTrigger=PropertyChanged}"/>
+            <RichTextBox x:Name="DescriptionRichTextBox"/>
         </DockPanel>
 
     </Grid>

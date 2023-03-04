@@ -7,12 +7,16 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using Tasks4U.Models;
 using Tasks4U.Services;
 using Task = Tasks4U.Models.Task;
+
+using RichTextBox = System.Windows.Controls.RichTextBox;
 
 namespace Tasks4U.ViewModels
 {
@@ -26,11 +30,12 @@ namespace Tasks4U.ViewModels
 
         private readonly TasksContext _tasksContext;
         private readonly IMessageBoxService _messageBoxService;
+        private readonly DispatcherTimer _timer;
         
         private Task? _editedTask;
         private TaskViewModel.Memento? _taskMementoBeforeEditing;
         private DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
-
+        
         public TasksViewModel(
             TasksContext tasksContext, 
             IMessageBoxService messageBoxService)
@@ -51,7 +56,7 @@ namespace Tasks4U.ViewModels
 
             ShowTasksCommand = new RelayCommand(ShowTasksListWithoutSaving);
 
-            AddTaskCommand = new RelayCommand(AddTask, () => NewTaskViewModel.IsValid());
+            AddTaskCommand = new RelayCommand<RichTextBox>(description => AddTask(description), (description) => NewTaskViewModel.IsValid());
 
             NewTaskViewModel.IsValidChanged += () => AddTaskCommand.NotifyCanExecuteChanged();
 
@@ -61,9 +66,9 @@ namespace Tasks4U.ViewModels
 
             // Start a timer that renews recurring tasks,
             // shows notifications and sorts the tasks datagrid when the date changes
-            var timer = new DispatcherTimer() { Interval = TimeSpan.FromMinutes(1) };
-            timer.Tick += (s, e) => TimerCallback();
-            timer.Start();
+            _timer = new DispatcherTimer() { Interval = TimeSpan.FromMinutes(1) };
+            _timer.Tick += (s, e) => TimerCallback();
+            _timer.Start();
         }
 
         public event Action? IsDateChanged;
@@ -77,7 +82,7 @@ namespace Tasks4U.ViewModels
         public RelayCommand<Task?> EditTaskCommand { get; }
 
         public ICommand ShowTasksCommand { get; }
-        public RelayCommand AddTaskCommand { get; }
+        public RelayCommand<RichTextBox> AddTaskCommand { get; }
 
         #endregion
 
@@ -131,11 +136,11 @@ namespace Tasks4U.ViewModels
             };
         }
 
-        private void AddTask()
+        private void AddTask(RichTextBox descriptionRichTextBox)
         {
             var task = new Task(NewTaskViewModel.Name)
             {
-                Description = NewTaskViewModel.Description,
+                Description = XamlWriter.Save(descriptionRichTextBox.Document),
                 TaskFrequency = NewTaskViewModel.TaskFrequency,
                 RelatedTo = NewTaskViewModel.RelatedTo,
                 Desk = NewTaskViewModel.Desk,
@@ -143,6 +148,11 @@ namespace Tasks4U.ViewModels
                 FinalDate = NewTaskViewModel.FinalDate,
                 Status = NewTaskViewModel.Status
             };
+            
+            // The tasks may be saved in the timer callback,
+            // but adding this task might cause an error,
+            // so we should temporarily disable the timer
+            _timer.IsEnabled = false;
 
             _tasksContext.Tasks.Add(task);
 
@@ -161,6 +171,8 @@ namespace Tasks4U.ViewModels
                 if (_editedTask != null)
                     _tasksContext.Add(_editedTask);
             }
+
+            _timer.IsEnabled = true;
 
             _editedTask = null;
             _taskMementoBeforeEditing = null;
@@ -353,7 +365,8 @@ namespace Tasks4U.ViewModels
                     renewedTasks.Add(task.ID);
             }
 
-            _tasksContext.SaveChanges();
+            if (renewedTasks.Count > 0)
+                _tasksContext.SaveChanges();
 
             foreach (var taskId in renewedTasks)
             {

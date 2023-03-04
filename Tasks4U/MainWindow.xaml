@@ -22,8 +22,8 @@
 
         <ToolBar DockPanel.Dock="Top">
             <!-- Add button - shows the NewTask UserControl-->
-            <Button Command="{Binding ShowNewTaskCommand}" 
-                            Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+            <Button Command="{Binding ShowNewTaskCommand}"
+                    Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel>
                     <Image Source="/Images/plus.png"/>
                     <TextBlock>Add</TextBlock>
@@ -58,8 +58,8 @@
             </Button>
 
             <!-- Done button - the user should click on it when she's done with the new task parameters-->
-            <Button Command="{Binding AddTaskCommand}"
-                            Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+            <Button Command="{Binding AddTaskCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
+                    Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel>
                     <Image Source="/Images/check.png"/>
                     <TextBlock>Done</TextBlock>
@@ -75,7 +75,7 @@
 
         <Grid>
             <views:TasksList Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
-            <views:NewTask                         
+            <views:NewTask x:Name="NewTask"                      
                         Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
         </Grid>
     </DockPanel>
