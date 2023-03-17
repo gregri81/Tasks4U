@@ -5,6 +5,7 @@ using System.Windows;
 using Tasks4U.Services;
 using Tasks4U.ViewModels;
 using Tasks4U.Models;
+using Tasks4U.FlowDocumentGenerators;
 
 namespace Tasks4U
 {
@@ -29,7 +30,10 @@ namespace Tasks4U
             new MainWindow()
             {
                 DataContext = new TasksViewModel(tasksContext,
-                                                 new MessageBoxService())
+                                                 new MessageBoxService(),
+                                                 new TasksListDocumentGenerator(),
+                                                 new TaskDocumentGenerator(),
+                                                 new PdfService())
             }.Show();            
         }
 

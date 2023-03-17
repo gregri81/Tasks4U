@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Tasks4U.Models;
 using Tasks4U.ViewModels;
 
@@ -18,7 +15,8 @@ namespace Tasks4U.Views
     /// </summary>
     public partial class TasksList : System.Windows.Controls.UserControl
     {
-        private TasksViewModel? _tasksViewModel;        
+        private TasksViewModel? _tasksViewModel;
+        private ICollectionView? _tasksView;
 
         public TasksList()
         {
@@ -30,18 +28,22 @@ namespace Tasks4U.Views
                 var tasks = _tasksViewModel.Tasks;
                 var filter = _tasksViewModel.Filter;
 
-                var view = CollectionViewSource.GetDefaultView(tasks);
+                _tasksView = CollectionViewSource.GetDefaultView(tasks);
 
-                if (view is ListCollectionView listCollectionView)
+                if (_tasksView is ListCollectionView listCollectionView)
                     listCollectionView.CustomSort = new CustomSorter();
 
-                view.Filter = task => filter.IsTaskFilteredIn((Task)task);
+                _tasksView.Filter = task => filter.IsTaskFilteredIn((Task)task);
 
-                filter.IsFilterChanged += () => view.Refresh();
+                filter.IsFilterChanged += () => _tasksView.Refresh();
 
-                _tasksViewModel.IsDateChanged += () => view.Refresh();
+                _tasksViewModel.IsDateChanged += () => _tasksView.Refresh();
             };           
         }
+
+        public DataGrid TasksGrid => DataGrid;
+
+        public IEnumerable<Task> TasksInView => _tasksView?.Cast<Task>() ?? Enumerable.Empty<Task>();
 
         private void TasksDataGridCell_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {

@@ -1,20 +1,9 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using Tasks4U.ViewModels;
 
@@ -63,7 +52,7 @@ namespace Tasks4U.Views
             {
                 DescriptionRichTextBox.Document = (FlowDocument)XamlReader.Parse(descriptionXaml);
             }
-            catch (System.Windows.Markup.XamlParseException)
+            catch (XamlParseException)
             {
                 // If we cannot parse descriptionXaml as XAML, treat it as plain text
                 DescriptionRichTextBox.Document.Blocks.Clear();

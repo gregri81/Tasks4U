@@ -2,7 +2,11 @@
 using Tasks4U.Models;
 using Tasks4U.Services;
 using Tasks4U.ViewModels;
+using Tasks4U.FlowDocumentGenerators;
+using System.Windows.Controls;
 using TaskStatus = Tasks4U.Models.TaskStatus;
+using System.Windows.Documents;
+using System.Windows.Markup;
 
 namespace Task4UTests
 {
@@ -16,11 +20,13 @@ namespace Task4UTests
 
         [TestMethod]
         public void NoTasksIfModelIsEmpty() =>
-            Assert.AreEqual(_tasksViewModel.Tasks.Count(), 0);
+            Assert.AreEqual(0, _tasksViewModel.Tasks.Count());
 
-        [TestMethod]
+        [STATestMethod]
         public void TasksAddedEditedAndRemoved()
         {
+            _tasksViewModel.Tasks.Clear();
+
             // Add first task
             var taskViewModel1 = new TaskViewModel
             {
@@ -34,17 +40,22 @@ namespace Task4UTests
                 RelatedTo = "related"
             };
 
-            _tasksViewModel.NewTaskViewModel = taskViewModel1;            
-            _tasksViewModel.AddTaskCommand.Execute(null);
+            _tasksViewModel.NewTaskViewModel = taskViewModel1;
             
-            Assert.AreEqual(_tasksViewModel.Tasks.Count(), 1);
+            var richTextBox = new RichTextBox();
+            richTextBox.Document.Blocks.Clear();
+            richTextBox.Document.Blocks.Add(new Paragraph(new Run(taskViewModel1.Description)));
+
+            _tasksViewModel.AddTaskCommand.Execute(richTextBox);
+            
+            Assert.AreEqual(1, _tasksViewModel.Tasks.Count());
             Assert.AreEqual("task1", _tasksViewModel.Tasks.First().Name);
 
             // Add second task
             var taskViewModel2 = new TaskViewModel { Name = "task2" };
 
             _tasksViewModel.NewTaskViewModel = taskViewModel2;
-            _tasksViewModel.AddTaskCommand.Execute(null);
+            _tasksViewModel.AddTaskCommand.Execute(new RichTextBox());
 
             Assert.AreEqual(2, _tasksViewModel.Tasks.Count());
             Assert.AreEqual("task2", _tasksViewModel.Tasks.Skip(1).First().Name);
@@ -56,11 +67,14 @@ namespace Task4UTests
             _tasksViewModel.EditSelectedTaskCommand.Execute(null);
             var editedTaskViewModel = _tasksViewModel.NewTaskViewModel;
 
+            var descriptionDocument = (FlowDocument)XamlReader.Parse(editedTaskViewModel.Description);
+            var description = new TextRange(descriptionDocument.ContentStart, descriptionDocument.ContentEnd).Text.Trim();
+
             Assert.AreEqual(taskViewModel1.Name, editedTaskViewModel.Name);
             Assert.AreEqual(taskViewModel1.TaskFrequency, editedTaskViewModel.TaskFrequency);
             Assert.AreEqual(taskViewModel1.Status, editedTaskViewModel.Status);
             Assert.AreEqual(taskViewModel1.Desk, editedTaskViewModel.Desk);
-            Assert.AreEqual(taskViewModel1.Description, editedTaskViewModel.Description);
+            Assert.AreEqual(taskViewModel1.Description, description);
             Assert.AreEqual(taskViewModel1.IntermediateDate, editedTaskViewModel.IntermediateDate);
             Assert.AreEqual(taskViewModel1.FinalDate, editedTaskViewModel.FinalDate);
             Assert.AreEqual(taskViewModel1.RelatedTo, editedTaskViewModel.RelatedTo);
@@ -107,8 +121,14 @@ namespace Task4UTests
         private static TasksViewModel CreateTasksViewModel()
         {
             var tasksContext = new TasksContext("Data Source=test.db");
-            
-            return new TasksViewModel(tasksContext, new MockMessageBoxService());
+            tasksContext.Tasks.RemoveRange(tasksContext.Tasks);
+            tasksContext.SaveChanges();
+
+            return new TasksViewModel(tasksContext, 
+                                      new MockMessageBoxService(), 
+                                      new TasksListDocumentGenerator(),
+                                      new TaskDocumentGenerator(),
+                                      new PdfService());
         }
     }
 }

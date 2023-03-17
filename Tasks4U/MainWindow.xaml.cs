@@ -2,8 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using Tasks4U.Services;
-using Tasks4U.ViewModels;
 
 namespace Tasks4U
 {
@@ -17,9 +15,9 @@ namespace Tasks4U
             InitializeComponent();
 
             Loaded += (s, e) => DisableCloseButton();
-           
+
         }
-        
+
         public void ShowTheWindow()
         {
             if (WindowState == WindowState.Minimized || Visibility != Visibility.Visible)
@@ -50,6 +48,6 @@ namespace Tasks4U
         static extern bool EnableMenuItem(IntPtr menu, uint idEnableItem, uint enable);
 
         [DllImport("user32.dll")]
-        static extern IntPtr GetSystemMenu(IntPtr handle, bool revert);
+        static extern IntPtr GetSystemMenu(IntPtr handle, bool revert);        
     }
 }

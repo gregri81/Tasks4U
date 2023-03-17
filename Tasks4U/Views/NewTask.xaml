@@ -8,6 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" 
              FontSize="15" Padding="10 10 15 20">
+
     <Grid x:Name="Grid" 
           HorizontalAlignment="Stretch" 
           DataContext="{Binding NewTaskViewModel}" 

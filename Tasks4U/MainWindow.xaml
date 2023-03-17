@@ -7,66 +7,149 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Background="AliceBlue"       
-        Title="Tasks4U" Height="450" Width="1414">
-
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding HandleWindowClosingCommand}"/>
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
+        Title="Tasks4U" Height="455" Width="1414">
 
     <DockPanel>
-        <DockPanel.Resources>
-            <Style TargetType="Image" BasedOn="{StaticResource ToolbarButtonImageStyle}"/>
-        </DockPanel.Resources>
-
-        <ToolBar DockPanel.Dock="Top">
-            <!-- Add button - shows the NewTask UserControl-->
-            <Button Command="{Binding ShowNewTaskCommand}"
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ToolBar>
+                <ToolBar.Resources>
+                    <Style TargetType="Image" BasedOn="{StaticResource ToolbarButtonImageStyle}"/>
+                </ToolBar.Resources>
+                <!-- Add button - shows the NewTask UserControl-->
+                <Button Command="{Binding ShowNewTaskCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
                     Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                <StackPanel>
-                    <Image Source="/Images/plus.png"/>
-                    <TextBlock>Add</TextBlock>
-                </StackPanel>
-            </Button>
+                    <StackPanel>
+                        <Image Source="/Images/plus.png"/>
+                        <TextBlock>Add</TextBlock>
+                    </StackPanel>
+                </Button>
 
-            <!-- Edit button - shows the NewTask UserControl with parameters filled in from the selected task-->
-            <Button Command="{Binding EditSelectedTaskCommand}" 
+                <!-- Edit button - shows the NewTask UserControl with parameters filled in from the selected task-->
+                <Button Command="{Binding EditSelectedTaskCommand}" 
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                <StackPanel>
-                    <Image Source="/Images/edit.png"/>
-                    <TextBlock>Edit</TextBlock>
-                </StackPanel>
-            </Button>
+                    <StackPanel>
+                        <Image Source="/Images/edit.png"/>
+                        <TextBlock>Edit</TextBlock>
+                    </StackPanel>
+                </Button>
 
-            <!-- Remove button - for removing an existing task-->
-            <Button Command="{Binding RemoveSelectedTasksCommand}"
+                <!-- Remove button - for removing an existing task-->
+                <Button Command="{Binding RemoveSelectedTasksCommand}"
                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                <StackPanel>
-                    <Image Source="/Images/minus.png"/>
-                    <TextBlock>Remove</TextBlock>
-                </StackPanel>
-            </Button>
+                    <StackPanel>
+                        <Image Source="/Images/minus.png"/>
+                        <TextBlock>Remove</TextBlock>
+                    </StackPanel>
+                </Button>
 
-            <!-- Cancel button - the user should click on it when she's done with the new task parameters-->
-            <Button Command="{Binding ShowTasksCommand}"
+                <!-- Cancel button - the user should click on it when she's done with the new task parameters-->
+                <Button Command="{Binding ShowTasksCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
                     Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                <StackPanel>
-                    <Image Source="/Images/cancel.png"/>
-                    <TextBlock>Cancel</TextBlock>
-                </StackPanel>
-            </Button>
+                    <StackPanel>
+                        <Image Source="/Images/cancel.png"/>
+                        <TextBlock>Cancel</TextBlock>
+                    </StackPanel>
+                </Button>
 
-            <!-- Done button - the user should click on it when she's done with the new task parameters-->
-            <Button Command="{Binding AddTaskCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
+                <!-- Done button - the user should click on it when she's done with the new task parameters-->
+                <Button Command="{Binding AddTaskCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
                     Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
-                <StackPanel>
-                    <Image Source="/Images/check.png"/>
-                    <TextBlock>Done</TextBlock>
-                </StackPanel>
-            </Button>
+                    <StackPanel>
+                        <Image Source="/Images/check.png"/>
+                        <TextBlock>Done</TextBlock>
+                    </StackPanel>
+                </Button>
 
-        </ToolBar>
+                <!-- Save as PDF button - saves the list of tasks or the edited/added task to a PDF file-->
+                <Button>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Command" Value="{Binding SaveTasksListAsPdfCommand}"/>
+                            <Setter Property="CommandParameter" Value="{Binding ElementName=TasksList, Path=TasksInView}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsNewTaskVisible}" Value="True">
+                                    <Setter Property="CommandParameter" Value="{Binding Path=Description, ElementName=NewTask}"/>
+                                    <Setter Property="Command" Value="{Binding SaveTaskAsPdfCommand}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    
+                    <StackPanel>
+                        <Image Source="/Images/save.png"/>
+                        <TextBlock>Save as PDF</TextBlock>
+                    </StackPanel>
+                </Button>
+            </ToolBar>
+
+            <ToolBar Grid.Column="1" HorizontalAlignment="Center"  
+                     Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                <ToolBar.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+                        <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                    </Style>
+                </ToolBar.Resources>
+                
+                <Button Command="ApplicationCommands.Cut" ToolTip="Cut">
+                    <TextBlock Text="&#xE8C6;"/>
+                </Button>
+
+                <Button Command="ApplicationCommands.Copy" ToolTip="Copy">
+                    <TextBlock Text="&#xE8C8;"/>
+                </Button>
+
+                <Button Command="ApplicationCommands.Paste" ToolTip="Paste">
+                    <TextBlock Text="&#xE77F;"/>
+                </Button>
+
+                <Button Command="ApplicationCommands.Undo" ToolTip="Undo">
+                    <TextBlock Text="&#xE7A7;"/>
+                </Button>
+
+                <Button Command="ApplicationCommands.Redo" ToolTip="Redo">
+                    <TextBlock Text="&#xE7A6;"/>
+                </Button>
+
+                <Button Command="EditingCommands.ToggleBold" ToolTip="Toogle Bold">
+                    <TextBlock Text="&#xE8DD;"/>
+                </Button>
+
+                <Button Command="EditingCommands.ToggleItalic" ToolTip="Toggle Italic">
+                    <TextBlock Text="&#xE8DB;"/>
+                </Button>
+
+                <Button Command="EditingCommands.ToggleUnderline" ToolTip="Toogle Underline">
+                    <TextBlock Text="&#xE8DC;"/>
+                </Button>
+
+                <Button Command="EditingCommands.IncreaseFontSize" ToolTip="Increase Font Size">
+                    <TextBlock Text="&#xE8E8;"/>
+                </Button>
+
+                <Button Command="EditingCommands.DecreaseFontSize" ToolTip="Decrease Font Size">
+                    <TextBlock Text="&#xE8E7;"/>
+                </Button>
+
+                <Button Command="EditingCommands.AlignLeft" ToolTip="Align Left">
+                    <TextBlock Text="&#xE8E4;"/>
+                </Button>
+
+                <Button Command="EditingCommands.AlignCenter" ToolTip="Align Center">
+                    <TextBlock Text="&#xE8E3;"/>
+                </Button>
+
+                <Button Command="EditingCommands.AlignRight" ToolTip="Align Right">
+                    <TextBlock Text="&#xE8E2;"/>
+                </Button>
+                              
+            </ToolBar>
+        </Grid>
 
         <ContentControl DockPanel.Dock="Top" Margin="0 0 0 20"
                         Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
@@ -74,7 +157,9 @@
         </ContentControl>
 
         <Grid>
-            <views:TasksList Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <views:TasksList x:Name="TasksList" 
+                             Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
+            
             <views:NewTask x:Name="NewTask"                      
                         Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}"/>
         </Grid>

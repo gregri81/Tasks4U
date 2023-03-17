@@ -149,7 +149,7 @@ namespace Tasks4U.ViewModels
             TaskFrequency = Frequency.Once;
             RelatedTo = string.Empty;
             Desk = Desk.General;
-            Status = TaskStatus.NotStarted;
+            Status = TaskStatus.InProgress;
         }
 
         public bool IsValid() => !HasErrors && !IntermediateDateViewModel.HasErrors && !FinalDateViewModel.HasErrors;

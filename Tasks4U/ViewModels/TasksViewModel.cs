@@ -7,13 +7,13 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Threading;
 using Tasks4U.Models;
 using Tasks4U.Services;
+using Tasks4U.FlowDocumentGenerators;
 using Task = Tasks4U.Models.Task;
 
 using RichTextBox = System.Windows.Controls.RichTextBox;
@@ -35,12 +35,21 @@ namespace Tasks4U.ViewModels
         private Task? _editedTask;
         private TaskViewModel.Memento? _taskMementoBeforeEditing;
         private DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
-        
+        private TasksListDocumentGenerator _tasksListDocumentGenerator;
+        private TaskDocumentGenerator _taskDocumentGenerator;
+        private IPdfService _pdfService;
+
         public TasksViewModel(
             TasksContext tasksContext, 
-            IMessageBoxService messageBoxService)
+            IMessageBoxService messageBoxService,
+            TasksListDocumentGenerator tasksListDocumentGenerator,
+            TaskDocumentGenerator taskDocumentGenerator,
+            IPdfService pdfService)
         {
             _messageBoxService = messageBoxService;
+            _tasksListDocumentGenerator = tasksListDocumentGenerator;
+            _taskDocumentGenerator = taskDocumentGenerator;
+            _pdfService = pdfService;
 
             tasksContext.Database.EnsureCreated();
             _tasksContext = tasksContext;
@@ -54,9 +63,13 @@ namespace Tasks4U.ViewModels
 
             EditTaskCommand = new RelayCommand<Task?>(task => EditTask(task));
 
-            ShowTasksCommand = new RelayCommand(ShowTasksListWithoutSaving);
+            ShowTasksCommand = new RelayCommand<RichTextBox>(description => ShowTasksListWithoutSaving(description));
 
             AddTaskCommand = new RelayCommand<RichTextBox>(description => AddTask(description), (description) => NewTaskViewModel.IsValid());
+
+            SaveTasksListAsPdfCommand = new RelayCommand<IEnumerable<Task>>(tasks => SaveTasksListAsPdf(tasks));
+            
+            SaveTaskAsPdfCommand = new RelayCommand<RichTextBox>(description => SaveTaskAsPdf(description));
 
             NewTaskViewModel.IsValidChanged += () => AddTaskCommand.NotifyCanExecuteChanged();
 
@@ -81,8 +94,11 @@ namespace Tasks4U.ViewModels
         public RelayCommand EditSelectedTaskCommand { get; }
         public RelayCommand<Task?> EditTaskCommand { get; }
 
-        public ICommand ShowTasksCommand { get; }
-        public RelayCommand<RichTextBox> AddTaskCommand { get; }
+        public RelayCommand<RichTextBox> ShowTasksCommand { get; }
+        public RelayCommand<RichTextBox> AddTaskCommand { get; }        
+
+        public RelayCommand<IEnumerable<Task>> SaveTasksListAsPdfCommand { get; }
+        public RelayCommand<RichTextBox> SaveTaskAsPdfCommand { get; }
 
         #endregion
 
@@ -136,11 +152,14 @@ namespace Tasks4U.ViewModels
             };
         }
 
-        private void AddTask(RichTextBox descriptionRichTextBox)
+        private void AddTask(RichTextBox? descriptionRichTextBox)
         {
             var task = new Task(NewTaskViewModel.Name)
             {
-                Description = XamlWriter.Save(descriptionRichTextBox.Document),
+                Description = descriptionRichTextBox == null 
+                              ? string.Empty 
+                              : XamlWriter.Save(descriptionRichTextBox.Document),
+
                 TaskFrequency = NewTaskViewModel.TaskFrequency,
                 RelatedTo = NewTaskViewModel.RelatedTo,
                 Desk = NewTaskViewModel.Desk,
@@ -178,6 +197,21 @@ namespace Tasks4U.ViewModels
             _taskMementoBeforeEditing = null;
         }
 
+        private void SaveTasksListAsPdf(IEnumerable<Task>? tasks)
+        {            
+            if (tasks != null)
+                _pdfService.SaveAsPdf(_tasksListDocumentGenerator.Generate(tasks), _messageBoxService);
+        }
+
+        private void SaveTaskAsPdf(RichTextBox? description)
+        {
+            if (description != null)
+            {
+                var flowDocument = _taskDocumentGenerator.Generate(NewTaskViewModel, description.Document);
+                _pdfService.SaveAsPdf(flowDocument, _messageBoxService);
+            }
+        }
+
         private void RemoveSelectedTasks()
         {
             var tasksToRemove = Tasks.Where(t => t.IsSelected).ToArray();
@@ -191,6 +225,7 @@ namespace Tasks4U.ViewModels
         private void ShowNewTask()
         {
             NewTaskViewModel.Clear();
+
             IsNewTaskVisible = true;
             IsTasksListVisible = false;
         }
@@ -224,8 +259,11 @@ namespace Tasks4U.ViewModels
             IsTasksListVisible = false;
         }
 
-        private void ShowTasksListWithoutSaving()
+        private void ShowTasksListWithoutSaving(RichTextBox? descriptionRichTextBox)
         {
+            if (descriptionRichTextBox != null)
+                NewTaskViewModel.Description = XamlWriter.Save(descriptionRichTextBox.Document);
+
             if (_taskMementoBeforeEditing == NewTaskViewModel.CreateMemento())
             {
                 ShowTasksList();
@@ -272,7 +310,7 @@ namespace Tasks4U.ViewModels
             }
 
             return true;
-        }
+        }                
 
         #endregion
 
@@ -346,13 +384,14 @@ namespace Tasks4U.ViewModels
                 EditTask(task);
             };
 
-            notificationIcon.BalloonTipClosed += (s, e) =>
+            notificationIcon.Click += (s, e) =>
             {
                 notificationIcon.Dispose();
+                EditTask(task);
             };
 
             notificationIcon.ShowBalloonTip(
-                5000, task.Name + taskFrequencyDescription, text, ToolTipIcon.Warning);
+                30000, task.Name + taskFrequencyDescription, text, ToolTipIcon.Warning);
         }
 
         private void RenewRecurringTasks()

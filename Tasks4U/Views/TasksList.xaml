@@ -9,7 +9,8 @@
              d:DesignHeight="450" d:DesignWidth="800"
              Padding="3">
 
-    <DataGrid ItemsSource="{Binding Tasks}"
+    <DataGrid x:Name="DataGrid"
+              ItemsSource="{Binding Tasks}"
               IsReadOnly="True"
               CanUserAddRows="False"
               VerticalAlignment="Top" 
@@ -17,6 +18,8 @@
         <DataGrid.Resources>
             <converters:FirstLineConverter x:Key="FirstLineConverter"/>
             <converters:DateAndFrequencyConverter x:Key="DateAndFrequencyConverter"/>
+            <converters:StringToFlowDocumentConverter x:Key="StringToFlowDocumentConverter"/>
+            
             <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}">
                 <EventSetter Event="PreviewMouseDown" Handler="TasksDataGridCell_PreviewMouseDown"/>
             </Style>
@@ -42,7 +45,12 @@
             <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource FirstLineConverter}}" Width="2*">
                 <DataGridTextColumn.CellStyle>
                     <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
-                        <Setter Property="ToolTip" Value="{Binding Description}"/>
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                          Document="{Binding Description, Converter={StaticResource StringToFlowDocumentConverter}}"/>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </DataGridTextColumn.CellStyle>
             </DataGridTextColumn>

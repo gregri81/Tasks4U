@@ -64,7 +64,7 @@ namespace Task4UTests
             Assert.AreEqual(string.Empty, taskViewModel.Description);
             Assert.AreEqual(Frequency.Once, taskViewModel.TaskFrequency);
             Assert.AreEqual(relatedTo, taskViewModel.RelatedTo);
-            Assert.AreEqual(TaskStatus.NotStarted, taskViewModel.Status);
+            Assert.AreEqual(TaskStatus.InProgress, taskViewModel.Status);
             Assert.AreEqual(Desk.General, taskViewModel.Desk);
         }
 
