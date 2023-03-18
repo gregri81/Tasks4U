@@ -126,8 +126,9 @@ namespace Task4UTests
 
             return new TasksViewModel(tasksContext, 
                                       new MockMessageBoxService(), 
-                                      new TasksListDocumentGenerator(),
-                                      new TaskDocumentGenerator(),
+                                      new TasksListFlowDocumentGenerator(),
+                                      new TaskFlowDocumentGenerator(),
+                                      new TasksListWorksheetGenerator(),
                                       new PdfService());
         }
     }

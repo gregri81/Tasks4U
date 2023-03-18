@@ -7,7 +7,7 @@ using Task = Tasks4U.Models.Task;
 
 namespace Tasks4U.FlowDocumentGenerators
 {
-    public class TasksListDocumentGenerator
+    public class TasksListFlowDocumentGenerator
     {
         private const int NumOfColumns = 8;        
 
@@ -74,13 +74,13 @@ namespace Tasks4U.FlowDocumentGenerators
             var cellContents = new string[] 
             {
                 task.Name, 
-                DocumentGeneratorUtils.GetTaskDescription(task), 
+                Utils.GetTaskDescription(task), 
                 task.RelatedTo, 
                 task.Desk.ToString(),
-                DocumentGeneratorUtils.SplitByCapitalLetters(task.TaskFrequency),
-                task.IntermediateDate.ToString(), 
-                task.FinalDate.ToString(),
-                DocumentGeneratorUtils.SplitByCapitalLetters(task.Status)
+                Utils.SplitByCapitalLetters(task.TaskFrequency),
+                Utils.GetDate(task.IntermediateDate, task.TaskFrequency),
+                Utils.GetDate(task.FinalDate, task.TaskFrequency),
+                Utils.SplitByCapitalLetters(task.Status)
             };
 
             foreach (var content in cellContents)

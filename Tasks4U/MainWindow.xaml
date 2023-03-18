@@ -84,6 +84,15 @@
                         <TextBlock>Save as PDF</TextBlock>
                     </StackPanel>
                 </Button>
+
+                <!-- Save as Excel button - saves the list of tasks an Excel file-->
+                <Button Command="{Binding SaveTasksListAsExcelCommand}" CommandParameter="{Binding ElementName=TasksList, Path=TasksInView}"
+                    Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel>
+                        <Image Source="/Images/excel.png"/>
+                        <TextBlock>Save as Excel</TextBlock>
+                    </StackPanel>
+                </Button>
             </ToolBar>
 
             <ToolBar Grid.Column="1" HorizontalAlignment="Center"  

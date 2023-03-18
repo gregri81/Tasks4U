@@ -9,7 +9,7 @@ using Tasks4U.ViewModels;
 
 namespace Tasks4U.FlowDocumentGenerators
 {
-    public class TaskDocumentGenerator
+    public class TaskFlowDocumentGenerator
     {
         public FlowDocument Generate(TaskViewModel task, FlowDocument descriptionDocument)
         {
@@ -17,10 +17,10 @@ namespace Tasks4U.FlowDocumentGenerators
 
             AddField(flowDocument, "Subject", task.Name);
             AddField(flowDocument, "Related To", task.RelatedTo);
-            AddField(flowDocument, "Desk", DocumentGeneratorUtils.SplitByCapitalLetters(task.Desk));
-            AddField(flowDocument, "Frequency", DocumentGeneratorUtils.SplitByCapitalLetters(task.TaskFrequency));
-            AddField(flowDocument, "Intermediate Date", task.IntermediateDate.ToString());
-            AddField(flowDocument, "Final Date", task.FinalDate.ToString());
+            AddField(flowDocument, "Desk", task.Desk.ToString());
+            AddField(flowDocument, "Frequency", Utils.SplitByCapitalLetters(task.TaskFrequency));
+            AddField(flowDocument, "Intermediate Date", Utils.GetDate(task.IntermediateDate, task.TaskFrequency, "None"));
+            AddField(flowDocument, "Final Date", Utils.GetDate(task.FinalDate, task.TaskFrequency));
 
             flowDocument.Blocks.Add(new Paragraph(new LineBreak()));
 

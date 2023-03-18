@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Images\tasks.ico</ApplicationIcon>
-	<VersionPrefix>1.0.0.8</VersionPrefix>
+	<VersionPrefix>1.0.0.9</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,16 +21,21 @@
     <None Remove="Images\cancel.png" />
     <None Remove="Images\check.png" />
     <None Remove="Images\edit.png" />
+    <None Remove="Images\excel.png" />
+    <None Remove="Images\export.png" />
     <None Remove="Images\minus.png" />
     <None Remove="Images\plus.png" />
     <None Remove="Images\save.png" />
+    <None Remove="Images\save_as.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\excel.png" />
     <Resource Include="Images\tasks.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.100.3" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">

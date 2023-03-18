@@ -14,8 +14,10 @@ using System.Windows.Threading;
 using Tasks4U.Models;
 using Tasks4U.Services;
 using Tasks4U.FlowDocumentGenerators;
-using Task = Tasks4U.Models.Task;
+using ClosedXML.Excel;
+using System.Data;
 
+using Task = Tasks4U.Models.Task;
 using RichTextBox = System.Windows.Controls.RichTextBox;
 
 namespace Tasks4U.ViewModels
@@ -31,24 +33,27 @@ namespace Tasks4U.ViewModels
         private readonly TasksContext _tasksContext;
         private readonly IMessageBoxService _messageBoxService;
         private readonly DispatcherTimer _timer;
-        
+
         private Task? _editedTask;
         private TaskViewModel.Memento? _taskMementoBeforeEditing;
         private DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
-        private TasksListDocumentGenerator _tasksListDocumentGenerator;
-        private TaskDocumentGenerator _taskDocumentGenerator;
+        private TasksListFlowDocumentGenerator _tasksListDocumentGenerator;
+        private TaskFlowDocumentGenerator _taskDocumentGenerator;
+        private TasksListWorksheetGenerator _tasksListWorksheetGenerator;
         private IPdfService _pdfService;
 
         public TasksViewModel(
-            TasksContext tasksContext, 
+            TasksContext tasksContext,
             IMessageBoxService messageBoxService,
-            TasksListDocumentGenerator tasksListDocumentGenerator,
-            TaskDocumentGenerator taskDocumentGenerator,
+            TasksListFlowDocumentGenerator tasksListDocumentGenerator,
+            TaskFlowDocumentGenerator taskDocumentGenerator,
+            TasksListWorksheetGenerator tasksListWorksheetGenerator,
             IPdfService pdfService)
         {
             _messageBoxService = messageBoxService;
             _tasksListDocumentGenerator = tasksListDocumentGenerator;
             _taskDocumentGenerator = taskDocumentGenerator;
+            _tasksListWorksheetGenerator = tasksListWorksheetGenerator;
             _pdfService = pdfService;
 
             tasksContext.Database.EnsureCreated();
@@ -68,8 +73,10 @@ namespace Tasks4U.ViewModels
             AddTaskCommand = new RelayCommand<RichTextBox>(description => AddTask(description), (description) => NewTaskViewModel.IsValid());
 
             SaveTasksListAsPdfCommand = new RelayCommand<IEnumerable<Task>>(tasks => SaveTasksListAsPdf(tasks));
-            
+
             SaveTaskAsPdfCommand = new RelayCommand<RichTextBox>(description => SaveTaskAsPdf(description));
+
+            SaveTasksListAsExcelCommand = new RelayCommand<IEnumerable<Task>>(tasks => SaveTasksListAsExcel(tasks));
 
             NewTaskViewModel.IsValidChanged += () => AddTaskCommand.NotifyCanExecuteChanged();
 
@@ -95,10 +102,12 @@ namespace Tasks4U.ViewModels
         public RelayCommand<Task?> EditTaskCommand { get; }
 
         public RelayCommand<RichTextBox> ShowTasksCommand { get; }
-        public RelayCommand<RichTextBox> AddTaskCommand { get; }        
+        public RelayCommand<RichTextBox> AddTaskCommand { get; }
 
         public RelayCommand<IEnumerable<Task>> SaveTasksListAsPdfCommand { get; }
         public RelayCommand<RichTextBox> SaveTaskAsPdfCommand { get; }
+
+        public RelayCommand<IEnumerable<Task>> SaveTasksListAsExcelCommand { get; }
 
         #endregion
 
@@ -156,8 +165,8 @@ namespace Tasks4U.ViewModels
         {
             var task = new Task(NewTaskViewModel.Name)
             {
-                Description = descriptionRichTextBox == null 
-                              ? string.Empty 
+                Description = descriptionRichTextBox == null
+                              ? string.Empty
                               : XamlWriter.Save(descriptionRichTextBox.Document),
 
                 TaskFrequency = NewTaskViewModel.TaskFrequency,
@@ -167,7 +176,7 @@ namespace Tasks4U.ViewModels
                 FinalDate = NewTaskViewModel.FinalDate,
                 Status = NewTaskViewModel.Status
             };
-            
+
             // The tasks may be saved in the timer callback,
             // but adding this task might cause an error,
             // so we should temporarily disable the timer
@@ -198,7 +207,7 @@ namespace Tasks4U.ViewModels
         }
 
         private void SaveTasksListAsPdf(IEnumerable<Task>? tasks)
-        {            
+        {
             if (tasks != null)
                 _pdfService.SaveAsPdf(_tasksListDocumentGenerator.Generate(tasks), _messageBoxService);
         }
@@ -209,6 +218,34 @@ namespace Tasks4U.ViewModels
             {
                 var flowDocument = _taskDocumentGenerator.Generate(NewTaskViewModel, description.Document);
                 _pdfService.SaveAsPdf(flowDocument, _messageBoxService);
+            }
+        }
+
+        private void SaveTasksListAsExcel(IEnumerable<Task>? tasks)
+        {
+            if (tasks == null)
+                return;
+
+            var saveFileDialog = new SaveFileDialog() { Filter = "*.xlsx|*.xlsx" };
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            using (var excelWorkbook = new XLWorkbook())
+            {
+                _tasksListWorksheetGenerator.Generate(excelWorkbook, tasks);
+
+                try
+                {
+                    excelWorkbook.SaveAs(saveFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    _messageBoxService.Show($"Failed to save tasks to '{saveFileDialog.FileName}'. {Environment.NewLine} {ex.Message}",
+                                            "Cannot Save",
+                                            MessageBoxButton.OK,
+                                            MessageBoxImage.Error);
+                }
             }
         }
 
@@ -281,7 +318,7 @@ namespace Tasks4U.ViewModels
             _taskMementoBeforeEditing = null;
             IsNewTaskVisible = false;
             IsTasksListVisible = true;
-        }        
+        }
 
         private bool Save()
         {
@@ -293,16 +330,16 @@ namespace Tasks4U.ViewModels
             {
                 if (exception.InnerException.Message.EndsWith("'UNIQUE constraint failed: Tasks.Name'."))
                 {
-                    _messageBoxService.Show("You cannot use the same subject twice.", 
-                                            "Subject must be unique", 
-                                            MessageBoxButton.OK, 
+                    _messageBoxService.Show("You cannot use the same subject twice.",
+                                            "Subject must be unique",
+                                            MessageBoxButton.OK,
                                             MessageBoxImage.Warning);
                 }
                 else
                 {
-                    _messageBoxService.Show(exception.InnerException.Message, 
-                                            "Failed to save", 
-                                            MessageBoxButton.OK, 
+                    _messageBoxService.Show(exception.InnerException.Message,
+                                            "Failed to save",
+                                            MessageBoxButton.OK,
                                             MessageBoxImage.Warning);
                 }
 
@@ -310,7 +347,7 @@ namespace Tasks4U.ViewModels
             }
 
             return true;
-        }                
+        }
 
         #endregion
 
@@ -413,7 +450,7 @@ namespace Tasks4U.ViewModels
                 task?.ClearStatus();
             }
         }
-        
+
         #endregion
     }
 }

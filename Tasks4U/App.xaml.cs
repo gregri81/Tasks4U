@@ -31,8 +31,9 @@ namespace Tasks4U
             {
                 DataContext = new TasksViewModel(tasksContext,
                                                  new MessageBoxService(),
-                                                 new TasksListDocumentGenerator(),
-                                                 new TaskDocumentGenerator(),
+                                                 new TasksListFlowDocumentGenerator(),
+                                                 new TaskFlowDocumentGenerator(),
+                                                 new TasksListWorksheetGenerator(),
                                                  new PdfService())
             }.Show();            
         }
