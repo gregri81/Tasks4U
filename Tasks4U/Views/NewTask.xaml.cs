@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Tasks4U.ViewModels;
 
@@ -31,9 +32,9 @@ namespace Tasks4U.Views
                 }
             };
 
-            Grid.DataContextChanged += (s, e) =>
+            DockPanel.DataContextChanged += (s, e) =>
             {
-                var dataContext = ((Grid)s).DataContext;
+                var dataContext = ((DockPanel)s).DataContext;
                 var taskViewModel = ((TaskViewModel)dataContext);
 
                 taskViewModel.PropertyChanged += (sender, ev) =>
@@ -42,9 +43,29 @@ namespace Tasks4U.Views
                         LoadDescription(taskViewModel.Description);
                 };
             };
+
+            EventManager.RegisterClassHandler(
+               typeof(UIElement),
+               Keyboard.GotKeyboardFocusEvent,
+               new RoutedEventHandler(OnKeyboardFocus), true);
         }
 
         public RichTextBox Description => DescriptionRichTextBox;
+
+        public void ChangeDirectionOfFocusedElement(IInputElement element, FlowDirection direction)
+        {
+            if (DataContext is TasksViewModel tasksViewModel)
+            {
+                var newTaskViewModel = tasksViewModel.NewTaskViewModel;
+
+                if (element == NameTextBox)
+                    newTaskViewModel.NameDirection = direction;
+                else if (element == RelatedToTextBox)
+                    newTaskViewModel.RelatedToDirection = direction;
+                else if (element == DescriptionRichTextBox)
+                    newTaskViewModel.DescriptionDirection = direction;
+            }
+        }
 
         private void LoadDescription(string descriptionXaml)
         {
@@ -59,5 +80,16 @@ namespace Tasks4U.Views
                 DescriptionRichTextBox.AppendText(descriptionXaml);
             }
         }
+
+        private void OnKeyboardFocus(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is TasksViewModel tasksViewModel)
+            {
+                if (sender is System.Windows.Controls.Primitives.DatePickerTextBox || sender is ComboBox)
+                    tasksViewModel.IsKeyboardFocusOnTextBox = false;
+                else if (sender is RichTextBox || sender is TextBox)
+                    tasksViewModel.IsKeyboardFocusOnTextBox = true;
+            }
+        }                
     }
 }

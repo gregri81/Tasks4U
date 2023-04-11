@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:Tasks4U.Converters"
-             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behaviors="clr-namespace:Tasks4U.Behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Padding="3">
@@ -15,16 +16,21 @@
               CanUserAddRows="False"
               VerticalAlignment="Top" 
               BorderThickness="1 1 1 0">
+
+        <i:Interaction.Behaviors>
+            <behaviors:ScalingBehavior/>
+        </i:Interaction.Behaviors>
+        
         <DataGrid.Resources>
             <converters:FirstLineConverter x:Key="FirstLineConverter"/>
             <converters:DateAndFrequencyConverter x:Key="DateAndFrequencyConverter"/>
             <converters:StringToFlowDocumentConverter x:Key="StringToFlowDocumentConverter"/>
-            
+
             <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}">
                 <EventSetter Event="PreviewMouseDown" Handler="TasksDataGridCell_PreviewMouseDown"/>
             </Style>
         </DataGrid.Resources>
-        
+       
         <DataGrid.Columns>
             <DataGridTemplateColumn>
                 <DataGridTemplateColumn.CellTemplate>
@@ -41,7 +47,7 @@
                     </Style>
                 </DataGridTextColumn.CellStyle>
             </DataGridTextColumn>
-            
+
             <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource FirstLineConverter}}" Width="2*">
                 <DataGridTextColumn.CellStyle>
                     <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
@@ -54,9 +60,9 @@
                     </Style>
                 </DataGridTextColumn.CellStyle>
             </DataGridTextColumn>
-            
+
             <DataGridTextColumn Header="Related To" Binding="{Binding RelatedTo}" Width="2*"/>
-            
+
             <DataGridTextColumn Header="Desk" Binding="{Binding Desk}" Width="*"/>
 
             <DataGridTextColumn Header="Task Frequency" Binding="{Binding TaskFrequency, Converter={StaticResource SplitByCapitalLettersConverter}}" Width="*"/>
@@ -80,7 +86,7 @@
             </DataGridTextColumn>
 
             <DataGridTextColumn Header="Status" Binding="{Binding Status, Converter={StaticResource SplitByCapitalLettersConverter}}" Width="*"/>
-            
+
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

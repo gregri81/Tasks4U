@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace Tasks4U
@@ -14,8 +15,7 @@ namespace Tasks4U
         {
             InitializeComponent();
 
-            Loaded += (s, e) => DisableCloseButton();
-
+            Loaded += (s, e) => DisableCloseButton();           
         }
 
         public void ShowTheWindow()
@@ -30,7 +30,7 @@ namespace Tasks4U
             Topmost = true;
             Topmost = false;
             Focus();
-        }
+        }       
 
         private void DisableCloseButton()
         {
@@ -48,6 +48,16 @@ namespace Tasks4U
         static extern bool EnableMenuItem(IntPtr menu, uint idEnableItem, uint enable);
 
         [DllImport("user32.dll")]
-        static extern IntPtr GetSystemMenu(IntPtr handle, bool revert);        
+        static extern IntPtr GetSystemMenu(IntPtr handle, bool revert);
+
+        private void LeftToRightButton_Click(object sender, RoutedEventArgs e)
+        {
+            NewTask.ChangeDirectionOfFocusedElement(Keyboard.FocusedElement, FlowDirection.LeftToRight);
+        }
+
+        private void RightToLeftButton_Click(object sender, RoutedEventArgs e)
+        {
+            NewTask.ChangeDirectionOfFocusedElement(Keyboard.FocusedElement, FlowDirection.RightToLeft);
+        }
     }
 }

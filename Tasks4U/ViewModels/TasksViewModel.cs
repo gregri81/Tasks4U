@@ -19,6 +19,7 @@ using System.Data;
 
 using Task = Tasks4U.Models.Task;
 using RichTextBox = System.Windows.Controls.RichTextBox;
+using FlowDirection = System.Windows.FlowDirection;
 
 namespace Tasks4U.ViewModels
 {
@@ -132,6 +133,13 @@ namespace Tasks4U.ViewModels
         }
 
         public TaskViewModel NewTaskViewModel { get; set; } = new TaskViewModel();
+
+        private bool _isKeyboardFocusOnTextBox;
+        public bool IsKeyboardFocusOnTextBox 
+        { 
+            get => _isKeyboardFocusOnTextBox;
+            set => SetProperty(ref _isKeyboardFocusOnTextBox, value);            
+        }
 
         #endregion
 
@@ -370,21 +378,10 @@ namespace Tasks4U.ViewModels
             if (now.TimeOfDay < _notificationsStartTime || now.TimeOfDay > _notificationsEndTime)
                 return;
 
-            var intermediateDateCorrespondingTasks =
-                _tasksContext.Tasks.AsEnumerable()
-                                   .Where(task => task.ShouldShowIntermediateNotification(now))
-                                   .ToList();
-
             var finalDateCorrespondingTasks =
                 _tasksContext.Tasks.AsEnumerable()
                                    .Where(task => task.ShouldShowFinalNotification(now))
                                    .ToList();
-
-            foreach (var task in intermediateDateCorrespondingTasks)
-            {
-                ShowNotification(task, "Intermediate date is today");
-                task.LastNotificationTime = now;
-            }
 
             foreach (var task in finalDateCorrespondingTasks)
             {

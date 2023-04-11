@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Windows;
 using Tasks4U.Models;
 
 
@@ -135,6 +136,33 @@ namespace Tasks4U.ViewModels
             set => FinalDateViewModel.TaskDate = value;
         }
 
+        private bool _keyboardFocusOnTextBox;
+        public bool KeyboardFocusOnTextBox
+        {
+            get => _keyboardFocusOnTextBox;
+            set => SetProperty(ref _keyboardFocusOnTextBox, value);       
+        }
+
+        private FlowDirection _nameDirection;
+        public FlowDirection NameDirection
+        {
+            get => _nameDirection;
+            set => SetProperty(ref _nameDirection, value);
+        }
+
+        private FlowDirection _relatedToDirection;
+        public FlowDirection RelatedToDirection
+        {
+            get => _relatedToDirection;
+            set => SetProperty(ref _relatedToDirection, value);
+        }
+
+        private FlowDirection _descriptionDirection;
+        public FlowDirection DescriptionDirection
+        {
+            get => _descriptionDirection;
+            set => SetProperty(ref _descriptionDirection, value);
+        }
         #endregion
 
         #region methods
@@ -150,6 +178,9 @@ namespace Tasks4U.ViewModels
             RelatedTo = string.Empty;
             Desk = Desk.General;
             Status = TaskStatus.InProgress;
+            NameDirection = FlowDirection.RightToLeft;
+            RelatedToDirection = FlowDirection.RightToLeft;
+            DescriptionDirection = FlowDirection.RightToLeft;
         }
 
         public bool IsValid() => !HasErrors && !IntermediateDateViewModel.HasErrors && !FinalDateViewModel.HasErrors;

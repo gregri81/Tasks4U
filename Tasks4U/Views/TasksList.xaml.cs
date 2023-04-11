@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using Tasks4U.Models;
 using Tasks4U.ViewModels;
 
@@ -91,6 +92,6 @@ namespace Tasks4U.Views
 
                 return 0;
             }
-        }
+        }       
     }
 }

@@ -5,51 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Tasks4U.Views"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behaviors="clr-namespace:Tasks4U.Behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" 
-             FontSize="15" Padding="10 10 15 20">
+             FontSize="15" Padding="10 10 15 20"
+             >
 
-    <Grid x:Name="Grid" 
-          HorizontalAlignment="Stretch" 
+    <i:Interaction.Behaviors>
+        <behaviors:ScalingBehavior/>
+    </i:Interaction.Behaviors>
+
+    <DockPanel x:Name="DockPanel"
           DataContext="{Binding NewTaskViewModel}" 
           Validation.ErrorTemplate="{x:Null}">
-        <Grid.ColumnDefinitions>
-            <!-- Name (Subject), Frequency and Dates  -->
-            <ColumnDefinition Width="250"/>
-            <!-- Margin Column -->
-            <ColumnDefinition Width="73"/>
-            <!-- Related-To and Description -->
-            <ColumnDefinition Width="300"/>
-            <!-- Margin Column -->
-            <ColumnDefinition Width="73"/>
-            <!-- Desk and Description -->
-            <ColumnDefinition Width="300"/>
-            <!-- Margin Column -->
-            <ColumnDefinition Width="73"/>
-            <!-- Status and Description -->
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <!-- Name (Subject) and Related-To -->
-            <RowDefinition Height="60"/>
-            <!-- Margin Row -->
-            <RowDefinition Height="15"/>
-            <!-- Frequency -->
-            <RowDefinition Height="60"/>
-            <!-- Margin -->
-            <RowDefinition Height="17"/>
-            <!-- Intermediate Date -->
-            <RowDefinition Height="60"/>
-            <!-- Margin -->
-            <RowDefinition Height="17"/>
-            <!-- Final Date -->
-            <RowDefinition Height="60"/>
-            <!-- Descriptions spans from row 2 up to this row -->
-            <RowDefinition Height="*"/>
-            <!-- Margin -->
-            <RowDefinition Height="26"/>
-        </Grid.RowDefinitions>
-        <Grid.Resources>
+        <DockPanel.Resources>
             <Style TargetType="Label">
                 <Setter Property="DockPanel.Dock" Value="Top"/>
                 <Setter Property="FontWeight" Value="DemiBold"/>
@@ -61,6 +31,7 @@
             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="Margin" Value="{StaticResource AlignWithLabelMargin}"/>
+                <Setter Property="InputLanguageManager.InputLanguage" Value="he-IL"/>
             </Style>
 
             <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
@@ -79,54 +50,69 @@
             <Style TargetType="local:TaskDate">
                 <Setter Property="Margin" Value="{StaticResource AlignWithLabelMargin}"/>
             </Style>
-        </Grid.Resources>
+        </DockPanel.Resources>
 
-        <!-- Name (subject), frequency and dates on the left side -->
-        <DockPanel Grid.Column="0" Grid.Row="0">
-            <Label>Subject:</Label>
-            <TextBox Name="NameTextBox" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
-        </DockPanel>
+        <!-- Name (subject), frequency, dates, related-to, status and desk on the left side -->
+        <StackPanel DockPanel.Dock="Left" Width="300" Margin="10 0 30 0">
+            <StackPanel.Resources>
+                <Style TargetType="DockPanel">
+                    <Setter Property="Margin" Value="0 0 0 22"/>
+                </Style>
+            </StackPanel.Resources>
+            
+            <DockPanel Grid.Column="0" Grid.Row="0">
+                <Label>Subject:</Label>
+                <TextBox Name="NameTextBox" 
+                         FlowDirection="{Binding NameDirection}" 
+                         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+            </DockPanel>
 
-        <DockPanel Grid.Column="0" Grid.Row="2">
-            <Label>Frequency:</Label>
-            <ComboBox ItemsSource="{Binding FrequencyValues}" SelectedValue="{Binding TaskFrequency}"/>
-        </DockPanel>
+            <DockPanel Grid.Column="0" Grid.Row="2">
+                <Label>Frequency:</Label>
+                <ComboBox ItemsSource="{Binding FrequencyValues}" SelectedValue="{Binding TaskFrequency}"/>
+            </DockPanel>
 
-        <DockPanel Grid.Column="0" Grid.Row="4">
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="{StaticResource AlignWithLabelMargin}">
-                <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsIntermediateDateEnabled}"/>
-                <Label>Intermediate Date:</Label>
-            </StackPanel>
-            <ContentControl IsEnabled="{Binding IsIntermediateDateEnabled}">
-                <local:TaskDate DataContext="{Binding IntermediateDateViewModel}"/>
-            </ContentControl>
-        </DockPanel>
+            <DockPanel Grid.Column="0" Grid.Row="4">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="{StaticResource AlignWithLabelMargin}">
+                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsIntermediateDateEnabled}"/>
+                    <Label>Intermediate Date:</Label>
+                </StackPanel>
+                <ContentControl IsEnabled="{Binding IsIntermediateDateEnabled}">
+                    <local:TaskDate DataContext="{Binding IntermediateDateViewModel}"/>
+                </ContentControl>
+            </DockPanel>
 
-        <DockPanel Grid.Column="0" Grid.Row="6">
-            <Label>Final Date:</Label>
-            <local:TaskDate DataContext="{Binding FinalDateViewModel}"/>
-        </DockPanel>
+            <DockPanel Grid.Column="0" Grid.Row="6">
+                <Label>Final Date:</Label>
+                <local:TaskDate DataContext="{Binding FinalDateViewModel}"/>
+            </DockPanel>
 
-        <!-- Related-to, status, desk and description on the right side -->
-        <DockPanel Grid.Column="2" Grid.Row="0">
-            <Label>Related To:</Label>
-            <TextBox Text="{Binding RelatedTo,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch"/>
-        </DockPanel>
+            <!-- Related-to, status, desk and description on the right side -->
+            <DockPanel Grid.Column="2" Grid.Row="0">
+                <Label>Related To:</Label>
+                <TextBox Name="RelatedToTextBox"
+                         FlowDirection="{Binding RelatedToDirection}"
+                         Text="{Binding RelatedTo,UpdateSourceTrigger=PropertyChanged}" 
+                         HorizontalAlignment="Stretch"/>
+            </DockPanel>
 
-        <DockPanel Grid.Column="4" Grid.Row="0" HorizontalAlignment="Left" Width="300">
-            <Label>Desk:</Label>
-            <ComboBox ItemsSource="{Binding DeskValues}" SelectedValue="{Binding Desk}"/>
-        </DockPanel>
+            <DockPanel Grid.Column="4" Grid.Row="0" HorizontalAlignment="Left" Width="300">
+                <Label>Desk:</Label>
+                <ComboBox ItemsSource="{Binding DeskValues}" SelectedValue="{Binding Desk}"/>
+            </DockPanel>
 
-        <DockPanel Grid.Column="6" Grid.Row="0" HorizontalAlignment="Left" Width="300">
-            <Label>Status:</Label>
-            <ComboBox ItemsSource="{Binding StatusValues}" SelectedValue="{Binding Status}"/>
-        </DockPanel>
-        
+            <DockPanel Grid.Column="6" Grid.Row="0" HorizontalAlignment="Left" Width="300">
+                <Label>Status:</Label>
+                <ComboBox ItemsSource="{Binding StatusValues}" SelectedValue="{Binding Status}"/>
+            </DockPanel>
+        </StackPanel>
+
+        <!-- Description on the right side-->
         <DockPanel Grid.Column="2" Grid.Row="2" Grid.RowSpan="6" Grid.ColumnSpan="5">
             <Label>Description:</Label>
-            <RichTextBox x:Name="DescriptionRichTextBox"/>
+            <RichTextBox x:Name="DescriptionRichTextBox" FlowDirection="{Binding DescriptionDirection}"/>
         </DockPanel>
 
-    </Grid>
+    </DockPanel>
+
 </UserControl>

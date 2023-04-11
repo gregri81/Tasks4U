@@ -8,7 +8,7 @@ namespace Task4UTests
             if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
                 return Invoke(testMethod);
 
-            TestResult[] result = null;
+            TestResult[]? result = null;
             var thread = new Thread(() => result = Invoke(testMethod));
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();

@@ -6,6 +6,8 @@ using Tasks4U.Services;
 using Tasks4U.ViewModels;
 using Tasks4U.Models;
 using Tasks4U.FlowDocumentGenerators;
+using System.Globalization;
+using System.Windows.Input;
 
 namespace Tasks4U
 {
@@ -25,7 +27,7 @@ namespace Tasks4U
 
             var dataSource = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tasks.db");
 
-            var tasksContext = new TasksContext("Data Source=" + dataSource);
+            var tasksContext = new TasksContext("Data Source=" + dataSource);            
 
             new MainWindow()
             {

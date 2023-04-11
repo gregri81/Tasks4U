@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Images\tasks.ico</ApplicationIcon>
-	<VersionPrefix>1.0.0.9</VersionPrefix>
+	<VersionPrefix>1.0.0.10</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +23,9 @@
     <None Remove="Images\edit.png" />
     <None Remove="Images\excel.png" />
     <None Remove="Images\export.png" />
+    <None Remove="Images\fabric-icons.ttf" />
     <None Remove="Images\minus.png" />
+    <None Remove="Images\numbering.png" />
     <None Remove="Images\plus.png" />
     <None Remove="Images\save.png" />
     <None Remove="Images\save_as.png" />
@@ -31,6 +33,7 @@
 
   <ItemGroup>
     <Resource Include="Images\excel.png" />
+    <Resource Include="Images\fabric-icons.ttf" />
     <Resource Include="Images\tasks.ico" />
   </ItemGroup>
 

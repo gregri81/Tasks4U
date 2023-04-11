@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Tasks4U" xmlns:views="clr-namespace:Tasks4U.Views"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:views="clr-namespace:Tasks4U.Views"
         mc:Ignorable="d"
-        Background="AliceBlue"       
-        Title="Tasks4U" Height="455" Width="1414">
+        Background="AliceBlue"
+        WindowState="Maximized"
+        Title="Tasks4U" MinHeight="627" MinWidth="539" Width="1414">
 
     <DockPanel>
         <Grid DockPanel.Dock="Top">
@@ -100,7 +100,7 @@
                 <ToolBar.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
-                        <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="FontSize" Value="20"/>
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                     </Style>
                 </ToolBar.Resources>
@@ -145,6 +145,17 @@
                     <TextBlock Text="&#xE8E7;"/>
                 </Button>
 
+                <Button Command="EditingCommands.ToggleBullets" ToolTip="Toggle Bullets">
+                    <TextBlock Text="&#xE8FD;" FontSize="25"/>
+                </Button>
+
+                <Button Command="EditingCommands.ToggleNumbering" ToolTip="Toggle Bullets">
+                    <TextBlock FontFamily="./Images/#Fabric MDL2 Assets" 
+                               FontSize="25" 
+                               HorizontalAlignment="Center" 
+                               Text="&#xEA1C;"/>
+                </Button>
+
                 <Button Command="EditingCommands.AlignLeft" ToolTip="Align Left">
                     <TextBlock Text="&#xE8E4;"/>
                 </Button>
@@ -156,7 +167,14 @@
                 <Button Command="EditingCommands.AlignRight" ToolTip="Align Right">
                     <TextBlock Text="&#xE8E2;"/>
                 </Button>
-                              
+
+                <Button IsEnabled="{Binding IsKeyboardFocusOnTextBox}" Click="LeftToRightButton_Click" ToolTip="Left To Right">
+                    <TextBlock Text="&#xE9AA;"/>
+                </Button>
+
+                <Button IsEnabled="{Binding IsKeyboardFocusOnTextBox}" Click="RightToLeftButton_Click" ToolTip="Right To Left">
+                    <TextBlock Text="&#xE9AB;"/>
+                </Button>
             </ToolBar>
         </Grid>
 
