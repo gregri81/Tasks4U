@@ -126,13 +126,13 @@ namespace Task4UTests
             Assert.IsTrue(task.Status == TaskStatus.NotStarted);
         }
 
-    private static IEnumerable<object[]> RenewRecurringTaskData()
+        private static IEnumerable<object[]> RenewRecurringTaskData()
         {
             var today = DateTime.Today;
 
             // Weekly task
             for (int i = 0; i < 7; i++)
-                yield return new object[] { Frequency.EveryWeek, today.AddDays(-i)};
+                yield return new object[] { Frequency.EveryWeek, today.AddDays(-i) };
 
             // Monthly task
             for (int day = 1; day <= 28; day++)

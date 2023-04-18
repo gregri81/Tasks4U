@@ -62,7 +62,7 @@
             
             <DockPanel Grid.Column="0" Grid.Row="0">
                 <Label>Subject:</Label>
-                <TextBox Name="NameTextBox" 
+                <TextBox Name="NameTextBox" HorizontalAlignment="Stretch"
                          FlowDirection="{Binding NameDirection}" 
                          Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>

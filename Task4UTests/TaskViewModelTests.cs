@@ -1,4 +1,5 @@
-﻿using Tasks4U.Models;
+﻿using System.Windows;
+using Tasks4U.Models;
 using Tasks4U.ViewModels;
 using TaskStatus = Tasks4U.Models.TaskStatus;
 
@@ -11,8 +12,11 @@ namespace Task4UTests
         public void TestProperties()
         {
             var name = string.Empty;
+            var nameDirection = FlowDirection.LeftToRight;
             var description = string.Empty;
+            var descriptionDirection = FlowDirection.LeftToRight;
             var relatedTo = string.Empty;
+            var relatedToDirection = FlowDirection.LeftToRight;
             var taskFrequency = Frequency.Once;
             var desk = Desk.General;
             var intermediateDate = DateOnly.MinValue;
@@ -27,14 +31,23 @@ namespace Task4UTests
                     case nameof(TaskViewModel.Name):
                         name = taskViewModel.Name;
                         break;
+                    case nameof(TaskViewModel.NameDirection):
+                        nameDirection = taskViewModel.NameDirection;
+                        break;
                     case nameof(TaskViewModel.Description):
                         description = taskViewModel.Description;
+                        break;
+                    case nameof(TaskViewModel.DescriptionDirection):
+                        descriptionDirection = taskViewModel.DescriptionDirection;
                         break;
                     case nameof(TaskViewModel.TaskFrequency):
                         taskFrequency = taskViewModel.TaskFrequency;
                         break;
                     case nameof(TaskViewModel.RelatedTo):
                         relatedTo = taskViewModel.RelatedTo;
+                        break;
+                    case nameof(TaskViewModel.RelatedToDirection):
+                        relatedToDirection = taskViewModel.RelatedToDirection;
                         break;
                     case nameof(TaskViewModel.Desk):
                         desk = taskViewModel.Desk;
@@ -43,14 +56,20 @@ namespace Task4UTests
             };
 
             taskViewModel.Name = "name";
+            taskViewModel.NameDirection = FlowDirection.LeftToRight;
             taskViewModel.Description = "description";
+            taskViewModel.DescriptionDirection = FlowDirection.RightToLeft;
             taskViewModel.RelatedTo = "donor";
+            taskViewModel.RelatedToDirection = FlowDirection.RightToLeft;
             taskViewModel.Desk = Desk.USA;
             taskViewModel.TaskFrequency = Frequency.EveryWeek;
 
             Assert.AreEqual(name, taskViewModel.Name);
+            Assert.AreEqual(nameDirection, taskViewModel.NameDirection);
             Assert.AreEqual(description, taskViewModel.Description);
+            Assert.AreEqual(descriptionDirection, taskViewModel.DescriptionDirection);
             Assert.AreEqual(relatedTo, taskViewModel.RelatedTo);
+            Assert.AreEqual(relatedToDirection, taskViewModel.RelatedToDirection);
             Assert.AreEqual(desk, taskViewModel.Desk);
             Assert.AreEqual(taskFrequency, taskViewModel.TaskFrequency);
 

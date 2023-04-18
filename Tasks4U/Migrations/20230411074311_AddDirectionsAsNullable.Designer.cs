@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tasks4U.Models;
 
@@ -10,9 +11,10 @@ using Tasks4U.Models;
 namespace Tasks4U.Migrations
 {
     [DbContext(typeof(TasksContext))]
-    partial class TasksContextModelSnapshot : ModelSnapshot
+    [Migration("20230411074311_AddDirectionsAsNullable")]
+    partial class AddDirectionsAsNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.10");
@@ -36,13 +38,13 @@ namespace Tasks4U.Migrations
                     b.Property<DateOnly>("IntermediateDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDescriptionLeftToRight")
+                    b.Property<bool?>("IsDescriptionLeftToRight")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsNameLeftToRight")
+                    b.Property<bool?>("IsNameLeftToRight")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsRelatedToLeftToRight")
+                    b.Property<bool?>("IsRelatedToLeftToRight")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("LastRenewalTime")

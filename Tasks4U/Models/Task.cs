@@ -16,8 +16,11 @@ namespace Tasks4U.Models
         public int ID { get; set; }
 
         public string Name { get; set; }
+        public bool IsNameLeftToRight { get; set; } = false;
         public string RelatedTo { get; set; } = string.Empty;
+        public bool IsRelatedToLeftToRight { get; set; } = false;
         public string Description { get; set; } = string.Empty;
+        public bool IsDescriptionLeftToRight { get; set; } = false; 
         public Desk Desk { get; set; }
         public Frequency TaskFrequency { get; set; }
         public DateOnly IntermediateDate { get; set; }
@@ -121,6 +124,9 @@ namespace Tasks4U.Models
         {
             get
             {
+                if (TaskFrequency == Frequency.Once)
+                    return DateOnly.MinValue;
+
                 var nextDateOfTask = NextDateOfTask;
 
                 if (nextDateOfTask == DateOnly.FromDateTime(DateTime.Today))

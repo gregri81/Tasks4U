@@ -182,7 +182,10 @@ namespace Tasks4U.ViewModels
                 Desk = NewTaskViewModel.Desk,
                 IntermediateDate = NewTaskViewModel.IntermediateDate,
                 FinalDate = NewTaskViewModel.FinalDate,
-                Status = NewTaskViewModel.Status
+                Status = NewTaskViewModel.Status,
+                IsNameLeftToRight = NewTaskViewModel.NameDirection == FlowDirection.LeftToRight,
+                IsRelatedToLeftToRight = NewTaskViewModel.RelatedToDirection == FlowDirection.LeftToRight,
+                IsDescriptionLeftToRight = NewTaskViewModel.DescriptionDirection == FlowDirection.LeftToRight,
             };
 
             // The tasks may be saved in the timer callback,
@@ -287,8 +290,11 @@ namespace Tasks4U.ViewModels
             NewTaskViewModel.Clear();
 
             NewTaskViewModel.Name = _editedTask.Name;
+            NewTaskViewModel.NameDirection = GetDirection(task.IsNameLeftToRight);
             NewTaskViewModel.Description = _editedTask.Description;
+            NewTaskViewModel.DescriptionDirection = GetDirection(task.IsDescriptionLeftToRight);
             NewTaskViewModel.RelatedTo = _editedTask.RelatedTo;
+            NewTaskViewModel.RelatedToDirection = GetDirection(task.IsRelatedToLeftToRight);
             NewTaskViewModel.Desk = _editedTask.Desk;
             NewTaskViewModel.Status = _editedTask.Status;
 
@@ -303,6 +309,9 @@ namespace Tasks4U.ViewModels
             IsNewTaskVisible = true;
             IsTasksListVisible = false;
         }
+
+        private FlowDirection GetDirection(bool isLeftToRight) => 
+            isLeftToRight ? FlowDirection.LeftToRight: FlowDirection.RightToLeft;
 
         private void ShowTasksListWithoutSaving(RichTextBox? descriptionRichTextBox)
         {

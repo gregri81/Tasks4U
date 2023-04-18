@@ -37,7 +37,10 @@ namespace Task4UTests
                 Description = "description",
                 IntermediateDate = DateOnly.MaxValue,
                 FinalDate = DateOnly.MaxValue,
-                RelatedTo = "related"
+                RelatedTo = "related",
+                NameDirection = FlowDirection.LeftToRight,
+                DescriptionDirection = FlowDirection.RightToLeft,
+                RelatedToDirection = FlowDirection.RightToLeft,
             };
 
             _tasksViewModel.NewTaskViewModel = taskViewModel1;
@@ -78,6 +81,9 @@ namespace Task4UTests
             Assert.AreEqual(taskViewModel1.IntermediateDate, editedTaskViewModel.IntermediateDate);
             Assert.AreEqual(taskViewModel1.FinalDate, editedTaskViewModel.FinalDate);
             Assert.AreEqual(taskViewModel1.RelatedTo, editedTaskViewModel.RelatedTo);
+            Assert.AreEqual(taskViewModel1.NameDirection, editedTaskViewModel.NameDirection);
+            Assert.AreEqual(taskViewModel1.RelatedToDirection, editedTaskViewModel.RelatedToDirection);
+            Assert.AreEqual(taskViewModel1.DescriptionDirection, editedTaskViewModel.DescriptionDirection);
 
             // Remove first task
             _tasksViewModel.RemoveSelectedTasksCommand.Execute(null);
