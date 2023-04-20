@@ -1,8 +1,12 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Tasks4U.ViewModels;
+using Tasks4U.Views;
 
 namespace Tasks4U
 {
@@ -58,6 +62,41 @@ namespace Tasks4U
         private void RightToLeftButton_Click(object sender, RoutedEventArgs e)
         {
             NewTask.ChangeDirectionOfFocusedElement(Keyboard.FocusedElement, FlowDirection.RightToLeft);
+        }
+
+
+        // The events below call view-model commands.
+        // We do it in the code-behind, because we need to read the Document property from the Description RichTextBox
+        // and it's better to avoid passing RichTexBox to the view-model - we don't want GUI in our view-model.
+
+        private void DoneButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tasksViewModel = (TasksViewModel)DataContext;
+
+            ExecuteCommandWithDescriptionArg(tasksViewModel.AddTaskCommand);          
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tasksViewModel = (TasksViewModel)DataContext;
+
+            ExecuteCommandWithDescriptionArg(tasksViewModel.ShowTasksCommand);
+        }
+
+        private void SaveAsPdfButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tasksViewModel = (TasksViewModel)DataContext;
+
+            if (tasksViewModel.IsNewTaskVisible)
+                ExecuteCommandWithDescriptionArg(tasksViewModel.SaveTaskAsPdfCommand);
+        }
+
+        private void ExecuteCommandWithDescriptionArg(RelayCommand<FlowDocument> command)
+        {
+            var description = NewTask.Description.Document;
+
+            if (command.CanExecute(description))
+                command.Execute(description);
         }
     }
 }

@@ -3,7 +3,6 @@ using Tasks4U.Models;
 using Tasks4U.Services;
 using Tasks4U.ViewModels;
 using Tasks4U.FlowDocumentGenerators;
-using System.Windows.Controls;
 using TaskStatus = Tasks4U.Models.TaskStatus;
 using System.Windows.Documents;
 using System.Windows.Markup;
@@ -45,11 +44,11 @@ namespace Task4UTests
 
             _tasksViewModel.NewTaskViewModel = taskViewModel1;
             
-            var richTextBox = new RichTextBox();
-            richTextBox.Document.Blocks.Clear();
-            richTextBox.Document.Blocks.Add(new Paragraph(new Run(taskViewModel1.Description)));
+            var document = new FlowDocument();
+            document.Blocks.Clear();
+            document.Blocks.Add(new Paragraph(new Run(taskViewModel1.Description)));
 
-            _tasksViewModel.AddTaskCommand.Execute(richTextBox);
+            _tasksViewModel.AddTaskCommand.Execute(document);
             
             Assert.AreEqual(1, _tasksViewModel.Tasks.Count());
             Assert.AreEqual("task1", _tasksViewModel.Tasks.First().Name);
@@ -58,7 +57,7 @@ namespace Task4UTests
             var taskViewModel2 = new TaskViewModel { Name = "task2" };
 
             _tasksViewModel.NewTaskViewModel = taskViewModel2;
-            _tasksViewModel.AddTaskCommand.Execute(new RichTextBox());
+            _tasksViewModel.AddTaskCommand.Execute(new FlowDocument());
 
             Assert.AreEqual(2, _tasksViewModel.Tasks.Count());
             Assert.AreEqual("task2", _tasksViewModel.Tasks.Skip(1).First().Name);

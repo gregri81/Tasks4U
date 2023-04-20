@@ -22,7 +22,7 @@ namespace Tasks4U.ViewModels
         // the selected date if frequency is Once (or minimum date if date is not selected).
         // Otherwise, the next date that corresponds to the selected recurring date considering the frequeny.
         // For instance, if frequency is EveryWeek and Monday is selected, then TaskDate is next monday.
-        // This week we can save dates in the database in the same format
+        // This way we can save dates in the database in the same format
         // and deduce the next recurring date from the starting date and the frequency.
         public DateOnly TaskDate
         {

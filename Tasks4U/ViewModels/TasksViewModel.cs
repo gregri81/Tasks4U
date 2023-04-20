@@ -18,17 +18,17 @@ using ClosedXML.Excel;
 using System.Data;
 
 using Task = Tasks4U.Models.Task;
-using RichTextBox = System.Windows.Controls.RichTextBox;
 using FlowDirection = System.Windows.FlowDirection;
+using System.Windows.Documents;
 
 namespace Tasks4U.ViewModels
 {
     public class TasksViewModel : ObservableObject
     {
-        // The customer's request is to start receiving notification at 9 o`clock
+        // The customer's request is to start receiving notifications at 9 o`clock
         private readonly TimeSpan _notificationsStartTime = TimeSpan.FromHours(9);
 
-        // The customer's request is to stop receiving notification at 5 o`clock pm
+        // The customer's request is to stop receiving notifications at 5 o`clock pm
         private readonly TimeSpan _notificationsEndTime = TimeSpan.FromHours(17);
 
         private readonly TasksContext _tasksContext;
@@ -69,17 +69,21 @@ namespace Tasks4U.ViewModels
 
             EditTaskCommand = new RelayCommand<Task?>(task => EditTask(task));
 
-            ShowTasksCommand = new RelayCommand<RichTextBox>(description => ShowTasksListWithoutSaving(description));
+            ShowTasksCommand = new RelayCommand<FlowDocument>(description => ShowTasksListWithoutSaving(description));
 
-            AddTaskCommand = new RelayCommand<RichTextBox>(description => AddTask(description), (description) => NewTaskViewModel.IsValid());
+            AddTaskCommand = new RelayCommand<FlowDocument>(description => AddTask(description), (description) => NewTaskViewModel.IsValid());
 
             SaveTasksListAsPdfCommand = new RelayCommand<IEnumerable<Task>>(tasks => SaveTasksListAsPdf(tasks));
 
-            SaveTaskAsPdfCommand = new RelayCommand<RichTextBox>(description => SaveTaskAsPdf(description));
+            SaveTaskAsPdfCommand = new RelayCommand<FlowDocument>(description => SaveTaskAsPdf(description));
 
             SaveTasksListAsExcelCommand = new RelayCommand<IEnumerable<Task>>(tasks => SaveTasksListAsExcel(tasks));
 
-            NewTaskViewModel.IsValidChanged += () => AddTaskCommand.NotifyCanExecuteChanged();
+            NewTaskViewModel.IsValidChanged += () =>
+            {
+                AddTaskCommand.NotifyCanExecuteChanged();
+                OnPropertyChanged(nameof(AddTaskCommandCanExecute));
+            };
 
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
 
@@ -102,11 +106,11 @@ namespace Tasks4U.ViewModels
         public RelayCommand EditSelectedTaskCommand { get; }
         public RelayCommand<Task?> EditTaskCommand { get; }
 
-        public RelayCommand<RichTextBox> ShowTasksCommand { get; }
-        public RelayCommand<RichTextBox> AddTaskCommand { get; }
+        public RelayCommand<FlowDocument> ShowTasksCommand { get; }
+        public RelayCommand<FlowDocument> AddTaskCommand { get; }
 
         public RelayCommand<IEnumerable<Task>> SaveTasksListAsPdfCommand { get; }
-        public RelayCommand<RichTextBox> SaveTaskAsPdfCommand { get; }
+        public RelayCommand<FlowDocument> SaveTaskAsPdfCommand { get; }
 
         public RelayCommand<IEnumerable<Task>> SaveTasksListAsExcelCommand { get; }
 
@@ -135,11 +139,13 @@ namespace Tasks4U.ViewModels
         public TaskViewModel NewTaskViewModel { get; set; } = new TaskViewModel();
 
         private bool _isKeyboardFocusOnTextBox;
-        public bool IsKeyboardFocusOnTextBox 
-        { 
+        public bool IsKeyboardFocusOnTextBox
+        {
             get => _isKeyboardFocusOnTextBox;
-            set => SetProperty(ref _isKeyboardFocusOnTextBox, value);            
+            set => SetProperty(ref _isKeyboardFocusOnTextBox, value);
         }
+
+        public bool AddTaskCommandCanExecute => AddTaskCommand.CanExecute(null);
 
         #endregion
 
@@ -169,14 +175,11 @@ namespace Tasks4U.ViewModels
             };
         }
 
-        private void AddTask(RichTextBox? descriptionRichTextBox)
+        private void AddTask(FlowDocument? description)
         {
             var task = new Task(NewTaskViewModel.Name)
             {
-                Description = descriptionRichTextBox == null
-                              ? string.Empty
-                              : XamlWriter.Save(descriptionRichTextBox.Document),
-
+                Description = description == null ? string.Empty : XamlWriter.Save(description),
                 TaskFrequency = NewTaskViewModel.TaskFrequency,
                 RelatedTo = NewTaskViewModel.RelatedTo,
                 Desk = NewTaskViewModel.Desk,
@@ -223,11 +226,11 @@ namespace Tasks4U.ViewModels
                 _pdfService.SaveAsPdf(_tasksListDocumentGenerator.Generate(tasks), _messageBoxService);
         }
 
-        private void SaveTaskAsPdf(RichTextBox? description)
+        private void SaveTaskAsPdf(FlowDocument? description)
         {
             if (description != null)
             {
-                var flowDocument = _taskDocumentGenerator.Generate(NewTaskViewModel, description.Document);
+                var flowDocument = _taskDocumentGenerator.Generate(NewTaskViewModel, description);
                 _pdfService.SaveAsPdf(flowDocument, _messageBoxService);
             }
         }
@@ -313,10 +316,10 @@ namespace Tasks4U.ViewModels
         private FlowDirection GetDirection(bool isLeftToRight) => 
             isLeftToRight ? FlowDirection.LeftToRight: FlowDirection.RightToLeft;
 
-        private void ShowTasksListWithoutSaving(RichTextBox? descriptionRichTextBox)
+        private void ShowTasksListWithoutSaving(FlowDocument? description)
         {
-            if (descriptionRichTextBox != null)
-                NewTaskViewModel.Description = XamlWriter.Save(descriptionRichTextBox.Document);
+            if (description != null)
+                NewTaskViewModel.Description = XamlWriter.Save(description);
 
             if (_taskMementoBeforeEditing == NewTaskViewModel.CreateMemento())
             {

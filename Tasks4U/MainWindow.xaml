@@ -20,7 +20,7 @@
                     <Style TargetType="Image" BasedOn="{StaticResource ToolbarButtonImageStyle}"/>
                 </ToolBar.Resources>
                 <!-- Add button - shows the NewTask UserControl-->
-                <Button Command="{Binding ShowNewTaskCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
+                <Button Command="{Binding ShowNewTaskCommand}"
                     Visibility="{Binding IsTasksListVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                     <StackPanel>
                         <Image Source="/Images/plus.png"/>
@@ -47,7 +47,7 @@
                 </Button>
 
                 <!-- Cancel button - the user should click on it when she's done with the new task parameters-->
-                <Button Command="{Binding ShowTasksCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
+                <Button Click="CancelButton_Click"
                     Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                     <StackPanel>
                         <Image Source="/Images/cancel.png"/>
@@ -56,8 +56,9 @@
                 </Button>
 
                 <!-- Done button - the user should click on it when she's done with the new task parameters-->
-                <Button Command="{Binding AddTaskCommand}" CommandParameter="{Binding Path=Description, ElementName=NewTask}"
-                    Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
+                <Button Click="DoneButton_Click" 
+                        IsEnabled="{Binding AddTaskCommandCanExecute}" 
+                        Visibility="{Binding IsNewTaskVisible,Converter={StaticResource BoolToVisibilityConverter}}">
                     <StackPanel>
                         <Image Source="/Images/check.png"/>
                         <TextBlock>Done</TextBlock>
@@ -65,15 +66,13 @@
                 </Button>
 
                 <!-- Save as PDF button - saves the list of tasks or the edited/added task to a PDF file-->
-                <Button>
+                <Button Click="SaveAsPdfButton_Click">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Command" Value="{Binding SaveTasksListAsPdfCommand}"/>
-                            <Setter Property="CommandParameter" Value="{Binding ElementName=TasksList, Path=TasksInView}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsNewTaskVisible}" Value="True">
-                                    <Setter Property="CommandParameter" Value="{Binding Path=Description, ElementName=NewTask}"/>
-                                    <Setter Property="Command" Value="{Binding SaveTaskAsPdfCommand}"/>
+                                <DataTrigger Binding="{Binding IsNewTaskVisible}" Value="False">
+                                    <Setter Property="Command" Value="{Binding SaveTasksListAsPdfCommand}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding ElementName=TasksList, Path=TasksInView}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
