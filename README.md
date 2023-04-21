@@ -44,6 +44,9 @@ Adding a Task:
 Editing a Task:
 ![EditingTask](https://user-images.githubusercontent.com/116143087/233644079-4ef05426-cb4a-4863-9b24-cdbd23ea08cd.png)
 
+Zoomed-In Task:
+![ZoomedInTask](https://user-images.githubusercontent.com/116143087/233646490-03163a33-b27e-45f8-a3d1-8b2b01ceb671.png)
+
 A Task Exported to PDF:
 ![TaskPdfExport](https://user-images.githubusercontent.com/116143087/233644190-06e8630f-d61a-48ea-ac9d-014708f48411.png)
 
