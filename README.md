@@ -33,10 +33,10 @@ Tasks Grid:
 ![TasksGrid](https://user-images.githubusercontent.com/116143087/233641618-147d3a70-8df9-418c-949f-c37402a17775.png)
 
 Zoomed-In Tasks Grid:
-![ZoomedInTasksGrid](https://user-images.githubusercontent.com/116143087/233641891-f784b70a-a954-4d2d-8ade-ab37252f35e0.png)
+![ZoomedInTasksGrid](https://user-images.githubusercontent.com/116143087/233645977-b2081de8-fd92-41cd-91f9-674888479187.png)
 
 Filtered Tasks Grid:
-![FilteredTaskGrid](https://user-images.githubusercontent.com/116143087/233642247-0cee4a09-6ee6-43ae-821d-7d79c657c0f7.png)
+![FilteredTaskGrid](https://user-images.githubusercontent.com/116143087/233646040-954e9821-e74c-47a5-9fd1-7f2ecaac0442.png)
 
 Adding a Task:
 ![AddingTask](https://user-images.githubusercontent.com/116143087/233644015-17daf32e-4535-497f-b685-4df930db70a3.png)
