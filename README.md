@@ -32,3 +32,23 @@ It's also possible to save the tasks list to an Excel file (I used the ClosedXML
 Tasks Grid:
 ![TasksGrid](https://user-images.githubusercontent.com/116143087/233641618-147d3a70-8df9-418c-949f-c37402a17775.png)
 
+Zoomed-In Tasks Grid:
+![ZoomedInTasksGrid](https://user-images.githubusercontent.com/116143087/233641891-f784b70a-a954-4d2d-8ade-ab37252f35e0.png)
+
+Filtered Tasks Grid:
+![FilteredTaskGrid](https://user-images.githubusercontent.com/116143087/233642247-0cee4a09-6ee6-43ae-821d-7d79c657c0f7.png)
+
+Adding a Task:
+![AddingTask](https://user-images.githubusercontent.com/116143087/233644015-17daf32e-4535-497f-b685-4df930db70a3.png)
+
+Editing a Task:
+![EditingTask](https://user-images.githubusercontent.com/116143087/233644079-4ef05426-cb4a-4863-9b24-cdbd23ea08cd.png)
+
+A Task Exported to PDF:
+![TaskPdfExport](https://user-images.githubusercontent.com/116143087/233644190-06e8630f-d61a-48ea-ac9d-014708f48411.png)
+
+All Tasks Exported to PDF:
+![TasksPdfExport](https://user-images.githubusercontent.com/116143087/233644316-9a782326-ab13-4dd2-a511-88ef05c8f706.png)
+
+All Tasks Exported to Excel:
+![ExcelExport](https://user-images.githubusercontent.com/116143087/233644359-a00ac6de-bb27-4b44-8d07-4e33e16f26a2.png)
