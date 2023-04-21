@@ -26,3 +26,9 @@ It's also possible to save the tasks list to an Excel file (I used the ClosedXML
 - I used an Sqlite database to store the tasks. I think that in a desktop application without a server, Sqlite is a good fit.
 - I used EF Core 6 for database access.
 - I Used the open-source ClosedXML library (https://github.com/ClosedXML/ClosedXML) to create and save an Excel file.
+
+# Screenshots
+
+Tasks Grid:
+![TasksGrid](https://user-images.githubusercontent.com/116143087/233641618-147d3a70-8df9-418c-949f-c37402a17775.png)
+
