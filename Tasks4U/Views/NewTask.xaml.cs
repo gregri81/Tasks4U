@@ -67,6 +67,13 @@ namespace Tasks4U.Views
             }
         }
 
+        public void HighlightSelectedTextInDescription()
+        {
+            var selection = DescriptionRichTextBox.Selection;
+            var range = new TextRange(selection.Start, selection.End);
+            range.ApplyPropertyValue(TextElement.BackgroundProperty, Brushes.Yellow);
+        }
+
         private void LoadDescription(string descriptionXaml)
         {
             try
@@ -86,9 +93,19 @@ namespace Tasks4U.Views
             if (DataContext is TasksViewModel tasksViewModel)
             {
                 if (sender is System.Windows.Controls.Primitives.DatePickerTextBox || sender is ComboBox)
+                {
                     tasksViewModel.IsKeyboardFocusOnTextBox = false;
-                else if (sender is RichTextBox || sender is TextBox)
+                }
+                else if (sender is TextBox)
+                {
                     tasksViewModel.IsKeyboardFocusOnTextBox = true;
+                    tasksViewModel.IsKeyboardFocusOnDescription = false;
+                }
+                else if (sender is RichTextBox)
+                {
+                    tasksViewModel.IsKeyboardFocusOnTextBox = true;
+                    tasksViewModel.IsKeyboardFocusOnDescription = true;
+                }
             }
         }                
     }

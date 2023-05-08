@@ -88,6 +88,7 @@ namespace Tasks4U.ViewModels
             Tasks = _tasksContext.Tasks.Local.ToObservableCollection();
 
             RegisterCallbackHandlersForTasksCollection();
+            CheckForOutdatedTasks();
 
             // Start a timer that renews recurring tasks,
             // shows notifications and sorts the tasks datagrid when the date changes
@@ -145,6 +146,13 @@ namespace Tasks4U.ViewModels
             set => SetProperty(ref _isKeyboardFocusOnTextBox, value);
         }
 
+        private bool _isKeyboardFocusOnDescription;
+        public bool IsKeyboardFocusOnDescription
+        {
+            get => _isKeyboardFocusOnDescription;
+            set => SetProperty(ref _isKeyboardFocusOnDescription, value);
+        }
+
         public bool AddTaskCommandCanExecute => AddTaskCommand.CanExecute(null);
 
         #endregion
@@ -160,7 +168,7 @@ namespace Tasks4U.ViewModels
             };
 
             foreach (Task task in Tasks)
-                task.IsUnmappedRowPropertyChanged += OnIsSelectedChanged;
+                task.IsSelectedChanged += OnIsSelectedChanged;
 
             Tasks.CollectionChanged += (e, s) =>
             {
@@ -169,10 +177,23 @@ namespace Tasks4U.ViewModels
 
                 if (s.NewItems != null)
                 {
+                    var today = DateOnly.FromDateTime(DateTime.Today);
+
                     foreach (Task task in s.NewItems)
-                        task.IsUnmappedRowPropertyChanged += OnIsSelectedChanged;
+                    {
+                        task.IsSelectedChanged += OnIsSelectedChanged;
+                        task.IsOutdated = task.FinalDate <= today;
+                    }
                 }
             };
+        }
+
+        private void CheckForOutdatedTasks()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            foreach (Task task in Tasks)
+                task.IsOutdated = task.FinalDate <= today;
         }
 
         private void AddTask(FlowDocument? description)
@@ -385,6 +406,7 @@ namespace Tasks4U.ViewModels
             {
                 _currentDate = today;
                 IsDateChanged?.Invoke();
+                CheckForOutdatedTasks();
             }
 
             if (now.TimeOfDay < _notificationsStartTime || now.TimeOfDay > _notificationsEndTime)

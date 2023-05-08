@@ -155,6 +155,10 @@
                                Text="&#xEA1C;"/>
                 </Button>
 
+                <Button IsEnabled="{Binding IsKeyboardFocusOnDescription}" Click="HighlightButton_Click" ToolTip="Highlight">
+                    <TextBlock Text="&#xE7E6;"/>
+                </Button>
+                
                 <Button Command="EditingCommands.AlignLeft" ToolTip="Align Left">
                     <TextBlock Text="&#xE8E4;"/>
                 </Button>

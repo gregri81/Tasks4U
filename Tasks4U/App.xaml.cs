@@ -8,6 +8,7 @@ using Tasks4U.Models;
 using Tasks4U.FlowDocumentGenerators;
 using System.Globalization;
 using System.Windows.Input;
+using System.Configuration;
 
 namespace Tasks4U
 {
@@ -25,7 +26,11 @@ namespace Tasks4U
         {
             base.OnStartup(e);
 
-            var dataSource = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tasks.db");
+            var tasks4UFolderPath = ConfigurationManager.AppSettings["sqliteFileDirectory"] ??
+                                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tasks4U");
+
+            Directory.CreateDirectory(tasks4UFolderPath);
+            var dataSource = Path.Combine(tasks4UFolderPath, "tasks.db");
 
             var tasksContext = new TasksContext("Data Source=" + dataSource);            
 

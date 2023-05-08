@@ -28,6 +28,12 @@
 
             <Style TargetType="DataGridCell" BasedOn="{StaticResource UnselectableDataGridCell}">
                 <EventSetter Event="PreviewMouseDown" Handler="TasksDataGridCell_PreviewMouseDown"/>
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsOutdated}" Value="True">
+                        <Setter Property="Foreground" Value="Red"/>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
         </DataGrid.Resources>
        
@@ -48,6 +54,8 @@
                 </DataGridTextColumn.CellStyle>
             </DataGridTextColumn>
 
+            <DataGridTextColumn Header="Related To" Binding="{Binding RelatedTo}" Width="*"/>
+
             <DataGridTextColumn Header="Description" Binding="{Binding Description,Converter={StaticResource FirstLineConverter}}" Width="2*">
                 <DataGridTextColumn.CellStyle>
                     <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
@@ -60,8 +68,6 @@
                     </Style>
                 </DataGridTextColumn.CellStyle>
             </DataGridTextColumn>
-
-            <DataGridTextColumn Header="Related To" Binding="{Binding RelatedTo}" Width="2*"/>
 
             <DataGridTextColumn Header="Desk" Binding="{Binding Desk}" Width="*"/>
 

@@ -64,6 +64,10 @@ namespace Tasks4U
             NewTask.ChangeDirectionOfFocusedElement(Keyboard.FocusedElement, FlowDirection.RightToLeft);
         }
 
+        private void HighlightButton_Click(object sender, RoutedEventArgs e)
+        {
+            NewTask.HighlightSelectedTextInDescription();
+        }
 
         // The events below call view-model commands.
         // We do it in the code-behind, because we need to read the Document property from the Description RichTextBox

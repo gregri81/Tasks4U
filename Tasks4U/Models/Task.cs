@@ -41,11 +41,19 @@ namespace Tasks4U.Models
             set
             {
                 _isSelected = value;
-                IsUnmappedRowPropertyChanged?.Invoke();
+                IsSelectedChanged?.Invoke();
             }
         }
 
-        public event Action? IsUnmappedRowPropertyChanged;
+        private bool _isOutdated;
+        [NotMapped]
+        public bool IsOutdated
+        {
+            get => _isOutdated;
+            set => SetProperty(ref _isOutdated, value);
+        }
+
+        public event Action? IsSelectedChanged;
 
         // Clear status and raises a callback.
         // This is needed when status is clear due to renewal of a recurring task - 

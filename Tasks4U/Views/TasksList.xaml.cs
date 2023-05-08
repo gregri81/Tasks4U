@@ -33,7 +33,7 @@ namespace Tasks4U.Views
 
                 if (_tasksView is ListCollectionView listCollectionView)
                     listCollectionView.CustomSort = new CustomSorter();
-
+                
                 _tasksView.Filter = task => filter.IsTaskFilteredIn((Task)task);
 
                 filter.IsFilterChanged += () => _tasksView.Refresh();
