@@ -182,7 +182,7 @@ namespace Tasks4U.ViewModels
                     foreach (Task task in s.NewItems)
                     {
                         task.IsSelectedChanged += OnIsSelectedChanged;
-                        task.IsOutdated = task.FinalDate <= today;
+                        task.IsOutdated = task.FinalDate <= today && task.Status != TaskStatus.Finished;
                     }
                 }
             };
@@ -193,7 +193,7 @@ namespace Tasks4U.ViewModels
             var today = DateOnly.FromDateTime(DateTime.Today);
 
             foreach (Task task in Tasks)
-                task.IsOutdated = task.FinalDate <= today;
+                task.IsOutdated = task.FinalDate <= today && task.Status != TaskStatus.Finished;
         }
 
         private void AddTask(FlowDocument? description)
