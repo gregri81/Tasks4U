@@ -43,6 +43,8 @@ namespace Tasks4U.ViewModels
         private TasksListWorksheetGenerator _tasksListWorksheetGenerator;
         private IPdfService _pdfService;
 
+        private Dictionary<NotifyIcon, DateTime> _notificationIcons = new Dictionary<NotifyIcon, DateTime>();
+
         public TasksViewModel(
             TasksContext tasksContext,
             IMessageBoxService messageBoxService,
@@ -396,6 +398,7 @@ namespace Tasks4U.ViewModels
 
         private void TimerCallback()
         {
+            RemoveTimedOutNotificationIcons();
             RenewRecurringTasks();
 
             var now = DateTime.Now;
@@ -449,17 +452,36 @@ namespace Tasks4U.ViewModels
             notificationIcon.BalloonTipClicked += (s, e) =>
             {
                 notificationIcon.Dispose();
+                _notificationIcons.Remove(notificationIcon);
                 EditTask(task);
             };
 
             notificationIcon.Click += (s, e) =>
             {
                 notificationIcon.Dispose();
+                _notificationIcons.Remove(notificationIcon);
                 EditTask(task);
             };
+            
+            _notificationIcons.Add(notificationIcon, DateTime.Now);
 
             notificationIcon.ShowBalloonTip(
                 30000, task.Name + taskFrequencyDescription, text, ToolTipIcon.Warning);
+        }
+
+        private void RemoveTimedOutNotificationIcons()
+        {
+            var now = DateTime.Now;
+
+            var timedOutNotificationIcons = _notificationIcons.Where(pair => (now - pair.Value).TotalMinutes >= 60)
+                                                              .Select(pair => pair.Key)
+                                                              .ToArray();
+
+            foreach (var icon in timedOutNotificationIcons)
+            {
+                icon.Dispose();
+                _notificationIcons.Remove(icon);
+            }
         }
 
         private void RenewRecurringTasks()
