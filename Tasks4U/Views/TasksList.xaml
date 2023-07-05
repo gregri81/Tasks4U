@@ -93,6 +93,8 @@
 
             <DataGridTextColumn Header="Status" Binding="{Binding Status, Converter={StaticResource SplitByCapitalLettersConverter}}" Width="*"/>
 
+            <DataGridTextColumn Header="Type" Binding="{Binding TaskType, Converter={StaticResource SplitByCapitalLettersConverter}}" Width="*"/>
+
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

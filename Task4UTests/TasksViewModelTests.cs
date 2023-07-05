@@ -40,6 +40,7 @@ namespace Task4UTests
                 NameDirection = FlowDirection.LeftToRight,
                 DescriptionDirection = FlowDirection.RightToLeft,
                 RelatedToDirection = FlowDirection.RightToLeft,
+                TaskType = TaskType.Research
             };
 
             _tasksViewModel.NewTaskViewModel = taskViewModel1;
@@ -76,6 +77,7 @@ namespace Task4UTests
             Assert.AreEqual(taskViewModel1.TaskFrequency, editedTaskViewModel.TaskFrequency);
             Assert.AreEqual(taskViewModel1.Status, editedTaskViewModel.Status);
             Assert.AreEqual(taskViewModel1.Desk, editedTaskViewModel.Desk);
+            Assert.AreEqual(taskViewModel1.TaskType, editedTaskViewModel.TaskType);
             Assert.AreEqual(taskViewModel1.Description, description);
             Assert.AreEqual(taskViewModel1.IntermediateDate, editedTaskViewModel.IntermediateDate);
             Assert.AreEqual(taskViewModel1.FinalDate, editedTaskViewModel.FinalDate);

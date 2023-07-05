@@ -47,6 +47,8 @@ namespace Tasks4U.ViewModels
         public static Array StatusValues => Enum.GetValues(typeof(TaskStatus));
 
         public static Array DeskValues => Enum.GetValues(typeof(Desk));
+        
+        public static Array TypeValues => Enum.GetValues(typeof(TaskType));
 
         public TaskDateViewModel IntermediateDateViewModel { get; }
 
@@ -99,6 +101,13 @@ namespace Tasks4U.ViewModels
         {
             get => _desk;
             set => SetProperty(ref _desk, value);
+        }
+
+        private TaskType _taskType = TaskType.None;
+        public TaskType TaskType
+        {
+            get => _taskType;
+            set => SetProperty(ref _taskType, value);
         }
 
         private bool _isIntermediateDateEnabled;
@@ -177,6 +186,7 @@ namespace Tasks4U.ViewModels
             TaskFrequency = Frequency.Once;
             RelatedTo = string.Empty;
             Desk = Desk.General;
+            TaskType = TaskType.None;
             Status = TaskStatus.InProgress;
             NameDirection = FlowDirection.RightToLeft;
             RelatedToDirection = FlowDirection.RightToLeft;
@@ -200,6 +210,7 @@ namespace Tasks4U.ViewModels
                             TaskFrequency,
                             Status,
                             Desk,
+                            TaskType,
                             IsIntermediateDateEnabled,
                             IntermediateDate,
                             FinalDate);
@@ -212,7 +223,8 @@ namespace Tasks4U.ViewModels
                               string RelatedTo, 
                               Frequency TaskFrequency, 
                               TaskStatus Status, 
-                              Desk Desk, 
+                              Desk Desk,
+                              TaskType TaskType,
                               bool IsIntermediateDateEnabled, 
                               DateOnly IntermediateDate, 
                               DateOnly FinalDate);

@@ -59,12 +59,12 @@ namespace Tasks4U.FlowDocumentGenerators
             };
 
             var cellContents = new string[] 
-                { "Subject", "Description", "Related To", "Desk", "Task Frequency", "Intermediate Date", "Final Date", "Status" };
+                { "Subject", "Description", "Related To", "Desk", "Type", "Task Frequency", "Intermediate Date", "Final Date", "Status" };
 
             foreach (var content in cellContents)
                 row.Cells.Add(GenerateCell(content));
 
-            return row;
+            return row; 
         }
 
         private TableRow GenerateTaskRow(Task task)
@@ -77,6 +77,7 @@ namespace Tasks4U.FlowDocumentGenerators
                 Utils.GetTaskDescription(task), 
                 task.RelatedTo, 
                 task.Desk.ToString(),
+                task.TaskType.ToString(),
                 Utils.SplitByCapitalLetters(task.TaskFrequency),
                 Utils.GetDate(task.IntermediateDate, task.TaskFrequency),
                 Utils.GetDate(task.FinalDate, task.TaskFrequency),

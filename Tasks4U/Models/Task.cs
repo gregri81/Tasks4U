@@ -9,6 +9,8 @@ namespace Tasks4U.Models
 
     public enum Frequency { Once, EveryWeek, EveryMonth, EveryYear };
 
+    public enum TaskType { None, AcademicProgram, Research, Scholarships};
+
     public class Task : ObservableObject
     {
         public Task(string name) => Name = name;
@@ -26,6 +28,8 @@ namespace Tasks4U.Models
         public DateOnly IntermediateDate { get; set; }
         public DateOnly FinalDate { get; set; }
         public TaskStatus Status { get; set; }
+        public TaskType TaskType { get; set; }
+
         public DateTime LastRenewalTime { get; set; } = DateTime.Now;
 
         [NotMapped]

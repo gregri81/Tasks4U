@@ -52,7 +52,7 @@
             </Style>
         </DockPanel.Resources>
 
-        <!-- Name (subject), frequency, dates, related-to, status and desk on the left side -->
+        <!-- Everyyhing on the left side, except for the description -->
         <StackPanel DockPanel.Dock="Left" Width="300" Margin="10 0 30 0">
             <StackPanel.Resources>
                 <Style TargetType="DockPanel">
@@ -60,19 +60,19 @@
                 </Style>
             </StackPanel.Resources>
             
-            <DockPanel Grid.Column="0" Grid.Row="0">
+            <DockPanel>
                 <Label>Subject:</Label>
                 <TextBox Name="NameTextBox" HorizontalAlignment="Stretch"
                          FlowDirection="{Binding NameDirection}" 
                          Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
 
-            <DockPanel Grid.Column="0" Grid.Row="2">
+            <DockPanel>
                 <Label>Frequency:</Label>
                 <ComboBox ItemsSource="{Binding FrequencyValues}" SelectedValue="{Binding TaskFrequency}"/>
             </DockPanel>
 
-            <DockPanel Grid.Column="0" Grid.Row="4">
+            <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="{StaticResource AlignWithLabelMargin}">
                     <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsIntermediateDateEnabled}"/>
                     <Label>Intermediate Date:</Label>
@@ -82,13 +82,12 @@
                 </ContentControl>
             </DockPanel>
 
-            <DockPanel Grid.Column="0" Grid.Row="6">
+            <DockPanel>
                 <Label>Final Date:</Label>
                 <local:TaskDate DataContext="{Binding FinalDateViewModel}"/>
             </DockPanel>
 
-            <!-- Related-to, status, desk and description on the right side -->
-            <DockPanel Grid.Column="2" Grid.Row="0">
+            <DockPanel>
                 <Label>Related To:</Label>
                 <TextBox Name="RelatedToTextBox"
                          FlowDirection="{Binding RelatedToDirection}"
@@ -96,19 +95,24 @@
                          HorizontalAlignment="Stretch"/>
             </DockPanel>
 
-            <DockPanel Grid.Column="4" Grid.Row="0" HorizontalAlignment="Left" Width="300">
+            <DockPanel HorizontalAlignment="Left" Width="300">
                 <Label>Desk:</Label>
                 <ComboBox ItemsSource="{Binding DeskValues}" SelectedValue="{Binding Desk}"/>
             </DockPanel>
 
-            <DockPanel Grid.Column="6" Grid.Row="0" HorizontalAlignment="Left" Width="300">
+            <DockPanel HorizontalAlignment="Left" Width="300">
                 <Label>Status:</Label>
                 <ComboBox ItemsSource="{Binding StatusValues}" SelectedValue="{Binding Status}"/>
+            </DockPanel>
+
+            <DockPanel HorizontalAlignment="Left" Width="300">
+                <Label>Type:</Label>
+                <ComboBox ItemsSource="{Binding TypeValues}" SelectedValue="{Binding TaskType}"/>
             </DockPanel>
         </StackPanel>
 
         <!-- Description on the right side-->
-        <DockPanel Grid.Column="2" Grid.Row="2" Grid.RowSpan="6" Grid.ColumnSpan="5">
+        <DockPanel>
             <Label>Description:</Label>
             <RichTextBox x:Name="DescriptionRichTextBox" FlowDirection="{Binding DescriptionDirection}"/>
         </DockPanel>

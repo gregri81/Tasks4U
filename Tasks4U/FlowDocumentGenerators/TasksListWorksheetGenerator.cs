@@ -37,7 +37,7 @@ namespace Tasks4U.FlowDocumentGenerators
         {
            var headers = new string[]
            {
-                "Subject", "Description", "RelatedTo", "Desk", "Frequency", "Intermediate Date", "Final Date", "Status"
+                "Subject", "Description", "RelatedTo", "Desk", "Type", "Frequency", "Intermediate Date", "Final Date", "Status"
            };
 
             for (int i = 0; i < headers.Length; i++)
@@ -50,20 +50,21 @@ namespace Tasks4U.FlowDocumentGenerators
             worksheet.Cell(row, 2).SetValue(Utils.GetTaskDescription(task));
             worksheet.Cell(row, 3).SetValue(task.RelatedTo);            
             worksheet.Cell(row, 4).SetValue(task.Desk.ToString());
-            worksheet.Cell(row, 5).SetValue(Utils.SplitByCapitalLetters(task.TaskFrequency));
+            worksheet.Cell(row, 5).SetValue(task.TaskType.ToString());
+            worksheet.Cell(row, 6).SetValue(Utils.SplitByCapitalLetters(task.TaskFrequency));
 
             string dateFormat = GetDateFormat(task.TaskFrequency);
 
             if (task.IntermediateDate > DateOnly.MinValue)
             {
-                worksheet.Cell(row, 6).Style.DateFormat.SetFormat(dateFormat);
-                worksheet.Cell(row, 6).SetValue(task.IntermediateDate.ToDateTime(TimeOnly.MinValue));
+                worksheet.Cell(row, 7).Style.DateFormat.SetFormat(dateFormat);
+                worksheet.Cell(row, 7).SetValue(task.IntermediateDate.ToDateTime(TimeOnly.MinValue));
             }
 
-            worksheet.Cell(row, 7).Style.DateFormat.SetFormat(dateFormat);
-            worksheet.Cell(row, 7).SetValue(task.FinalDate.ToDateTime(TimeOnly.MinValue));
+            worksheet.Cell(row, 8).Style.DateFormat.SetFormat(dateFormat);
+            worksheet.Cell(row, 8).SetValue(task.FinalDate.ToDateTime(TimeOnly.MinValue));
 
-            worksheet.Cell(row, 8).SetValue(Utils.SplitByCapitalLetters(task.Status));
+            worksheet.Cell(row, 9).SetValue(Utils.SplitByCapitalLetters(task.Status));
         }
 
         private void SetAsDropDown(IXLWorksheet worksheet, Type enumType, int column)

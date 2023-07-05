@@ -18,6 +18,7 @@ namespace Tasks4U.FlowDocumentGenerators
             AddField(flowDocument, "Subject", task.Name);
             AddField(flowDocument, "Related To", task.RelatedTo);
             AddField(flowDocument, "Desk", task.Desk.ToString());
+            AddField(flowDocument, "Type", task.TaskType.ToString());
             AddField(flowDocument, "Frequency", Utils.SplitByCapitalLetters(task.TaskFrequency));
             AddField(flowDocument, "Intermediate Date", Utils.GetDate(task.IntermediateDate, task.TaskFrequency, "None"));
             AddField(flowDocument, "Final Date", Utils.GetDate(task.FinalDate, task.TaskFrequency));

@@ -20,6 +20,7 @@ using System.Data;
 using Task = Tasks4U.Models.Task;
 using FlowDirection = System.Windows.FlowDirection;
 using System.Windows.Documents;
+using System.IO;
 
 namespace Tasks4U.ViewModels
 {
@@ -41,7 +42,7 @@ namespace Tasks4U.ViewModels
         private TasksListFlowDocumentGenerator _tasksListDocumentGenerator;
         private TaskFlowDocumentGenerator _taskDocumentGenerator;
         private TasksListWorksheetGenerator _tasksListWorksheetGenerator;
-        private IPdfService _pdfService;
+        private IPdfService _pdfService;        
 
         private Dictionary<NotifyIcon, DateTime> _notificationIcons = new Dictionary<NotifyIcon, DateTime>();
 
@@ -57,7 +58,7 @@ namespace Tasks4U.ViewModels
             _tasksListDocumentGenerator = tasksListDocumentGenerator;
             _taskDocumentGenerator = taskDocumentGenerator;
             _tasksListWorksheetGenerator = tasksListWorksheetGenerator;
-            _pdfService = pdfService;
+            _pdfService = pdfService;            
 
             tasksContext.Database.EnsureCreated();
             _tasksContext = tasksContext;
@@ -65,7 +66,7 @@ namespace Tasks4U.ViewModels
 
             RemoveSelectedTasksCommand = new RelayCommand(RemoveSelectedTasks, () => Tasks != null && Tasks.Any(t => t.IsSelected));
 
-            ShowNewTaskCommand = new RelayCommand(ShowNewTask);
+            ShowNewTaskCommand = new RelayCommand(() => ShowNewTask(null, null));
 
             EditSelectedTaskCommand = new RelayCommand(EditSelectedTask, () => Tasks != null && Tasks.Where(t => t.IsSelected).Take(2).Count() == 1);
 
@@ -159,7 +160,20 @@ namespace Tasks4U.ViewModels
 
         #endregion
 
-        #region methods                
+        #region methods        
+        public void ShowNewTask(string? TaskName, string description)
+        {
+            NewTaskViewModel.Clear();
+
+            if (TaskName != null)
+                NewTaskViewModel.Name = TaskName;
+
+            if (description != null)
+                NewTaskViewModel.Description = description;
+
+            IsNewTaskVisible = true;
+            IsTasksListVisible = false;
+        }
 
         private void RegisterCallbackHandlersForTasksCollection()
         {
@@ -209,6 +223,7 @@ namespace Tasks4U.ViewModels
                 IntermediateDate = NewTaskViewModel.IntermediateDate,
                 FinalDate = NewTaskViewModel.FinalDate,
                 Status = NewTaskViewModel.Status,
+                TaskType = NewTaskViewModel.TaskType,
                 IsNameLeftToRight = NewTaskViewModel.NameDirection == FlowDirection.LeftToRight,
                 IsRelatedToLeftToRight = NewTaskViewModel.RelatedToDirection == FlowDirection.LeftToRight,
                 IsDescriptionLeftToRight = NewTaskViewModel.DescriptionDirection == FlowDirection.LeftToRight,
@@ -294,15 +309,7 @@ namespace Tasks4U.ViewModels
                 Tasks.Remove(task);
 
             Save();
-        }
-
-        private void ShowNewTask()
-        {
-            NewTaskViewModel.Clear();
-
-            IsNewTaskVisible = true;
-            IsTasksListVisible = false;
-        }
+        }        
 
         private void EditSelectedTask() => EditTask(Tasks.SingleOrDefault(t => t.IsSelected));
 
@@ -323,6 +330,7 @@ namespace Tasks4U.ViewModels
             NewTaskViewModel.RelatedToDirection = GetDirection(task.IsRelatedToLeftToRight);
             NewTaskViewModel.Desk = _editedTask.Desk;
             NewTaskViewModel.Status = _editedTask.Status;
+            NewTaskViewModel.TaskType = _editedTask.TaskType;
 
             NewTaskViewModel.DisableDateValidation(true);
             NewTaskViewModel.TaskFrequency = _editedTask.TaskFrequency;
@@ -391,7 +399,7 @@ namespace Tasks4U.ViewModels
 
             return true;
         }
-
+       
         #endregion
 
         #region methods that are called by timer

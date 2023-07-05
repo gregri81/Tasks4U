@@ -19,6 +19,7 @@ namespace Task4UTests
             var relatedToDirection = FlowDirection.LeftToRight;
             var taskFrequency = Frequency.Once;
             var desk = Desk.General;
+            var taskType = TaskType.None;
             var intermediateDate = DateOnly.MinValue;
             var finalDate = DateOnly.MinValue;
 
@@ -52,6 +53,9 @@ namespace Task4UTests
                     case nameof(TaskViewModel.Desk):
                         desk = taskViewModel.Desk;
                         break;
+                    case nameof(TaskViewModel.TaskType):
+                        taskType = taskViewModel.TaskType;
+                        break;
                 }
             };
 
@@ -63,6 +67,7 @@ namespace Task4UTests
             taskViewModel.RelatedToDirection = FlowDirection.RightToLeft;
             taskViewModel.Desk = Desk.USA;
             taskViewModel.TaskFrequency = Frequency.EveryWeek;
+            taskViewModel.TaskType = TaskType.Scholarships;
 
             Assert.AreEqual(name, taskViewModel.Name);
             Assert.AreEqual(nameDirection, taskViewModel.NameDirection);
@@ -72,6 +77,7 @@ namespace Task4UTests
             Assert.AreEqual(relatedToDirection, taskViewModel.RelatedToDirection);
             Assert.AreEqual(desk, taskViewModel.Desk);
             Assert.AreEqual(taskFrequency, taskViewModel.TaskFrequency);
+            Assert.AreEqual(taskType, taskViewModel.TaskType);
 
             // Test that Clear function works
             taskViewModel.Clear();
@@ -85,6 +91,7 @@ namespace Task4UTests
             Assert.AreEqual(relatedTo, taskViewModel.RelatedTo);
             Assert.AreEqual(TaskStatus.InProgress, taskViewModel.Status);
             Assert.AreEqual(Desk.General, taskViewModel.Desk);
+            Assert.AreEqual(TaskType.None, taskViewModel.TaskType);
         }
 
         [TestMethod]

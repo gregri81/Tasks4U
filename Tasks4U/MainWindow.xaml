@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Background="AliceBlue"
         WindowState="Maximized"
-        Title="Tasks4U" MinHeight="627" MinWidth="539" Width="1414">
+        Title="Tasks4U" MinHeight="703" MinWidth="539" Width="1414">
 
     <DockPanel>
         <Grid DockPanel.Dock="Top">
