@@ -89,14 +89,17 @@ namespace Tasks4U
 
             Directory.CreateDirectory(FromOutlookDir);
 
-            _outlookFolderWatcher = new FileSystemWatcher(FromOutlookDir, "*.*")
+            _outlookFolderWatcher = new FileSystemWatcher(FromOutlookDir, "task.rtf")
             {
-                NotifyFilter = NotifyFilters.LastWrite,
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
                 EnableRaisingEvents = true
-            };
+            };            
 
-            _outlookFolderWatcher.Changed += (s, e) =>
+            _outlookFolderWatcher.Renamed += (s, e) =>
             {
+                if (e.Name != "task.rtf")
+                    return;
+
                 Current.Dispatcher.Invoke(() =>
                 {
                     // Load the RTF file to a FlowDocument
@@ -122,11 +125,11 @@ namespace Tasks4U
                     var blocksToRemove = new List<Block>();
 
                     foreach (var block in document.Blocks)
-                    {
+                    {                        
                         blocksToRemove.Add(block);
 
                         var text = new TextRange(block.ContentStart, block.ContentEnd).Text;
-                        
+
                         var match = Regex.Match(text, @"Subject:(.*)", RegexOptions.None);
 
                         if (match.Success)

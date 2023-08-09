@@ -6,6 +6,8 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Xml;
+using Tasks4U.FlowDocumentGenerators;
 using Tasks4U.ViewModels;
 
 namespace Tasks4U.Views
@@ -82,11 +84,19 @@ namespace Tasks4U.Views
             }
             catch (XamlParseException)
             {
-                // If we cannot parse descriptionXaml as XAML, treat it as plain text
-                DescriptionRichTextBox.Document.Blocks.Clear();
-                DescriptionRichTextBox.AppendText(descriptionXaml);
+                try
+                {
+                    var withoutImages = descriptionXaml.WithoutBitmapImages();
+                    DescriptionRichTextBox.Document = (FlowDocument)XamlReader.Parse(withoutImages);
+                }
+                catch (XamlParseException)
+                {
+                    // If we cannot parse descriptionXaml as XAML, treat it as plain text
+                    DescriptionRichTextBox.Document.Blocks.Clear();
+                    DescriptionRichTextBox.AppendText(descriptionXaml);
+                }
             }
-        }
+        }        
 
         private void OnKeyboardFocus(object sender, RoutedEventArgs e)
         {

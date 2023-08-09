@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
+using System.Xml;
 using Tasks4U.Converters;
 using Tasks4U.Models;
 
@@ -31,6 +33,31 @@ namespace Tasks4U.FlowDocumentGenerators
                 return defaultValue;
 
             return res;
+        }
+
+        public static string WithoutBitmapImages(this string descriptionXaml)
+        {
+            try
+            {
+                var doc = new XmlDocument();
+                doc.LoadXml(descriptionXaml);
+                var bitmapImageNodes = doc.GetElementsByTagName("BitmapImage");
+
+                if (bitmapImageNodes == null)
+                    return descriptionXaml;
+
+                for (int i = bitmapImageNodes.Count - 1; i >= 0; i--)
+                {
+                    var node = bitmapImageNodes[i];
+                    node?.ParentNode?.RemoveChild(node);
+                }
+
+                return doc.OuterXml;
+            }
+            catch(XmlException)
+            {
+                return descriptionXaml;
+            }
         }
     }
 }

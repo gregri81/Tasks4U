@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Markup;
+using Tasks4U.FlowDocumentGenerators;
 
 namespace Tasks4U.Converters
 {
@@ -16,9 +17,16 @@ namespace Tasks4U.Converters
             }
             catch (XamlParseException)
             {
-                // If we cannot parse the given value as XAML, treat it as plain text
-                var paragraph = new Paragraph(new Run((string)value));
-                return new FlowDocument(paragraph);
+                try
+                {
+                    return (FlowDocument)XamlReader.Parse(((string)value).WithoutBitmapImages());
+                }
+                catch (XamlParseException)
+                {
+                    // If we cannot parse the given value as XAML, treat it as plain text
+                    var paragraph = new Paragraph(new Run((string)value));
+                    return new FlowDocument(paragraph);
+                }
             }
         }
 
