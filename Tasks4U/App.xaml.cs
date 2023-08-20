@@ -23,7 +23,7 @@ namespace Tasks4U
     {
         private const string UNIQUE_EVENT_NAME = "Tasks4UEvent_9b1ae09e-f034-40e3-b5b9-2214b6203bb4";
         private EventWaitHandle? _eventWaitHandle;
-        private FileSystemWatcher _outlookFolderWatcher;
+        private FileSystemWatcher? _outlookFolderWatcher;
 
         public App() => SingleInstanceWatcher();
 

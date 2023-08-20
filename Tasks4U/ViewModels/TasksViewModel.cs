@@ -161,7 +161,7 @@ namespace Tasks4U.ViewModels
         #endregion
 
         #region methods        
-        public void ShowNewTask(string? TaskName, string description)
+        public void ShowNewTask(string? TaskName, string? description)
         {
             NewTaskViewModel.Clear();
 
@@ -423,19 +423,19 @@ namespace Tasks4U.ViewModels
             if (now.TimeOfDay < _notificationsStartTime || now.TimeOfDay > _notificationsEndTime)
                 return;
 
-            var finalDateCorrespondingTasks =
+            var taskToShow =
                 _tasksContext.Tasks.AsEnumerable()
                                    .Where(task => task.ShouldShowFinalNotification(now))
-                                   .ToList();
+                                   .MinBy(task => task.LastNotificationTime);
 
-            foreach (var task in finalDateCorrespondingTasks)
+            if (taskToShow != null)
             {
-                var message = task.IsDayOfFinalDate(today)
-                              ? "Final date is today"
-                              : "Final date has passed";
+                var message = taskToShow.IsDayOfFinalDate(today)
+                                ? "Final date is today"
+                                : "Final date has passed";
 
-                ShowNotification(task, message);
-                task.LastNotificationTime = now;
+                ShowNotification(taskToShow, message);
+                taskToShow.LastNotificationTime = now;
             }
         }
 
